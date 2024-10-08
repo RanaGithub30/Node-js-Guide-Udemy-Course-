@@ -22,7 +22,18 @@ const server = http.createServer((req, res) => {
     */
 
     if(url === '/message-submit' && method == "POST"){
-             fs.writeFileSync('message.txt', 'DUMMY'); // create a new file
+            // create a new event for when data is submitted
+              const body = [];
+             req.on('data', (chunk) => [
+                 body.push(chunk),
+                 console.log(chunk),
+             ]);
+             req.on('end', () => {
+                 const parsedBody = Buffer.concat(body).toString(); // Combine all chunks in the `body` array and convert the Buffer to a string
+                 const message = parsedBody.split('=')[1];
+                 fs.writeFileSync('message.txt', message); // create a new file and write the message within the file
+             });
+
              res.statusCode = 302;
              res.setHeader('Location', '/');
              return res.end();
