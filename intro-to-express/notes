@@ -1,0 +1,7 @@
+/* Install nodes package manager using */
+
+npm init
+
+/* Install 3rd party packages */
+
+npm i packageName; // npm i nodemon
