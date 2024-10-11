@@ -15,6 +15,9 @@ const app = express(); // express returns a function
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
+/** express.static() is middleware that serves static files (like images, CSS, JavaScript) from a specified directory.  */
+app.use(express.static(path.join(__dirname, 'public')));
+
 /** 
  * way to declare middleware in express
 */
