@@ -1,7 +1,18 @@
-/* Install nodes package manager using */
+/** What is Express.js */
 
-npm init
+Express.js is a lightweight and flexible web application framework for Node.js that simplifies building web applications and APIs. 
+It provides an easy way to handle routing, middleware, and HTTP requests/responses, allowing developers to quickly create server-side 
+logic for their applications.
 
-/* Install 3rd party packages */
+/* Install express using */
 
-npm i packageName; // npm i nodemon
+npm i --save express; // npm i nodemon
+
+/** body-parser */
+
+In Node.js, body-parser is a middleware that parses the body of incoming HTTP requests and makes the parsed data available 
+as an object in the request object
+
+/** way to install body-parser */
+
+npm i body-parser
