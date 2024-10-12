@@ -8,8 +8,7 @@ router.get('/product', (req, res, next) => {
 });
 
 router.get('/product-add', (req, res, next) => {
-    res.sendFile(path.join(rootDir, '../', 'views', 'add-product.html'));
-    // res.send("<form action='/product-submit' method='POST'><input type='text' name='name' placeholder='Enter Product Name'><button type='submit'>Submit</button></form>");
+    res.sendFile(path.join(rootDir, 'views', 'add-product.html'));
 });
 
 router.post('/product-submit', (req, res, next) => {
