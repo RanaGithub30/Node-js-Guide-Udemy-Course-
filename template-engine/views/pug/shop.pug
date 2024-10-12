@@ -1,0 +1,28 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title #{docTitle}
+        link(rel="stylesheet", href="/css/main.css")
+    body 
+        header 
+            nav 
+                ul
+                    li 
+                        a(href="/") Shop 
+                    li 
+                        a(href="/product-add") Add Product
+        main
+            h1 #{docTitle}
+            if prod.length > 0
+            each product in prod
+                .card 
+                    img(src="https://images.theconversation.com/files/45159/original/rptgtpxd-1396254731.jpg?ixlib=rb-4.1.0&q=45&auto=format&w=1356&h=668&fit=crop" alt="Avatar")
+                    .container 
+                        h4 
+                            b #{product.title} 
+                        p Description 
+                        button(type="button") Add To Cart
+            else 
+                h1 No Product Found
