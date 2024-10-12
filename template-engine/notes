@@ -1,0 +1,3 @@
+/** Install below template engines **/
+
+num i --save ejs pug handlebars
