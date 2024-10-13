@@ -6,7 +6,7 @@ const rootDir = require('../helpers/path');
 const products = [];
 
 router.get('/product-add', (req, res, next) => {
-     res.render('add-product');
+     res.render('add-product', {path: '/product-add', pageTitle: 'Product Add'});
     // res.sendFile(path.join(rootDir, 'views', 'add-product.html'));
 });
 

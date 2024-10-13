@@ -10,7 +10,7 @@ const adminRoutes = require('../routes/admin');
 
 router.get('/', (req, res, next) => {
     const products = adminRoutes.products;
-    res.render('shop', {prod: products, docTitle: 'Shop'}); // to render template engine in server
+    res.render('shop', {prod: products, docTitle: 'Shop', path: "/shop", pageTitle: 'Shop'}); // to render template engine in server
     // res.sendFile(path.join(rootDir, 'views', 'shop.html')); // sendFile is used to render HTML in server
 });
 

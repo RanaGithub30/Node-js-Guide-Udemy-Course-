@@ -22,7 +22,7 @@ app.use(adminRoutes.routes);
 app.use(shopRoutes);
 
 app.use((req, res, next) => {
-    res.render('404');
+    res.render('404', {path: '404', pageTitle: '404'});
     // res.status(404).sendFile(path.join(rootDir, 'views', 'errors', '404.html'));
 });
 

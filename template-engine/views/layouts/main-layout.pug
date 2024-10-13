@@ -1,0 +1,22 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title #{pageTitle}
+        block cssContent
+    body 
+        if path !== "404"
+            header 
+                    nav 
+                        ul
+                            li 
+                                a(href="/" class=(path==="/shop" ? 'active' : '')) Shop 
+                            li 
+                                a(href="/product-add" class=(path==="/product-add" ? 'shop' : '')) Add Product
+            main
+            block content
+        else
+            main 
+            block notFoundContent
+        
