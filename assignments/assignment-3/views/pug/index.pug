@@ -2,3 +2,6 @@ extends ./layouts/header
 block cssContent
     link(rel="stylesheet", href="/css/main.css")
 block content
+    form(action="/user-submit" method="POST")
+                input(type="text" name="name")
+                button(type="submit") Add User

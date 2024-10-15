@@ -13,10 +13,10 @@ const mainRoute = require('./routes/main');
 app.set('view engine', 'pug');
 app.set('views', 'views/pug');
 
-app.use(mainRoute.routes);
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(mainRoute.routes);
 
 app.use((req, res, next) => {
     res.render('404', {path: '404', pageTitle: '404'});
