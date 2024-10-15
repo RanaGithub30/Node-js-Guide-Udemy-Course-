@@ -1,0 +1,7 @@
+extends ../layouts/main-layout
+block cssContent
+    link(rel="stylesheet", href="/css/main.css")
+block content
+            form(action="/product-submit" method="POST")
+                input(type="text" name="title")
+                button(type="submit") Add Product
