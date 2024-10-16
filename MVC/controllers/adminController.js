@@ -1,3 +1,4 @@
+const prodModel = require('../models/products');
 const products = [];
 
 module.exports.productAdd = (req, res, next) => {
@@ -5,7 +6,8 @@ module.exports.productAdd = (req, res, next) => {
 }
 
 module.exports.prodSubmit = (req, res, next) => {
-    products.push({ title: req.body.title});
+    const prod = new prodModel(req.body.title);
+    prod.save();
     res.redirect('/');
 }
 
