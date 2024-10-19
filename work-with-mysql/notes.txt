@@ -1,3 +1,9 @@
 /* Install Mysql in node */
 
 npm i mysql2
+
+/* Mysql Pool */
+
+In Node.js, mysql.createPool is a method provided by the mysql or mysql2 package that creates a pool of connections to a MySQL database. 
+A connection pool is a collection of database connections that can be reused to handle multiple queries more efficiently 
+without the overhead of opening and closing connections frequently.
