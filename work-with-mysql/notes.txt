@@ -1,0 +1,3 @@
+/* Install Mysql in node */
+
+npm i mysql2
