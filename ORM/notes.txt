@@ -1,0 +1,13 @@
+/* What is Sequelize? */
+
+Sequelize is a powerful Object-Relational Mapping (ORM) library for Node.js, which allows developers to interact with databases 
+such as MySQL, PostgreSQL, SQLite, and Microsoft SQL Server using JavaScript. Sequelize abstracts the raw SQL queries and provides 
+a higher-level API for working with database models, relationships, and queries in a more intuitive and object-oriented way.
+
+/** install the package **/
+
+npm i --save sequelize
+
+/** Also we need to install mysql/other db package as well **/
+
+npm i mysql2
