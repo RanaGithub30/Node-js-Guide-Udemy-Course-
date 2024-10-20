@@ -11,3 +11,15 @@ npm i --save sequelize
 /** Also we need to install mysql/other db package as well **/
 
 npm i mysql2
+
+/* app.js - relation description */
+
+// Defines a relationship where each Product belongs to a single User (foreign key in the Product table)
+Product.belongsTo(User, {
+  
+  // Adds foreign key constraints to ensure data integrity (i.e., no invalid foreign key references)
+  constraints: true,
+  
+  // Specifies that if a User is deleted, all related Products will also be deleted (cascading deletion)
+  onDelete: 'CASCADE'  
+});

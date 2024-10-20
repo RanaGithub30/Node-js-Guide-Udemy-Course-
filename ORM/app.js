@@ -2,11 +2,19 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const errorController = require('./controllers/error');
+const Product = require('./models/product');
+const User = require('./models/user');
 
 const db = require('./util/database');
 
+/** Define relationship */
+Product.belongsTo(User, {constraints: true, onDelete: 'CASCADE'});
+
 /** Execute to create the db tables that are define in the sequelize model */
-db.sync().then(result => console.log(result)).catch(err => console.log(err));
+db.sync().
+// sync({force: true})
+then(result => console.log(result)).
+catch(err => console.log(err));
 
 const app = express();
 
