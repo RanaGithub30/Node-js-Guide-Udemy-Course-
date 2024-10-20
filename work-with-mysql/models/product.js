@@ -1,11 +1,4 @@
-// db
 const db = require('../util/database');
-
-const Cart = require('./cart');
-
-const getProductsFromFile = cb => {
-  
-};
 
 module.exports = class Product {
   constructor(id, title, imageUrl, description, price) {
@@ -21,8 +14,13 @@ module.exports = class Product {
       [this.title, this.price, this.description, this.imageUrl]);
   }
 
+  update(id){
+      return db.execute('UPDATE products SET title = ?, price =?, description =?, image =? WHERE id = ?', 
+        [this.title, this.price, this.description, this.imageUrl, id]);
+  }
+
   static deleteById(id) {
-    
+    return db.execute('DELETE FROM products WHERE id = ?', [id]);
   }
 
   static fetchAll() {
@@ -30,6 +28,6 @@ module.exports = class Product {
   }
 
   static findById(id) {
-    
+    return db.execute('SELECT * FROM products WHERE id = ?', [id]);
   }
 };
