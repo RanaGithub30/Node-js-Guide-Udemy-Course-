@@ -8,6 +8,7 @@ const User = require('./models/user');
 const db = require('./util/database');
 
 /** Define relationship */
+User.hasMany(Product);
 Product.belongsTo(User, {constraints: true, onDelete: 'CASCADE'});
 
 /** Execute to create the db tables that are define in the sequelize model */
@@ -17,6 +18,14 @@ then(result => console.log(result)).
 catch(err => console.log(err));
 
 const app = express();
+
+/** Add a middleware to define user relation */
+app.use((req, res, next) => {
+    User.findByPk(1).then(user => {
+        req.user = user;
+        next();
+    }).catch(err => console.log(err))
+});
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
