@@ -16,7 +16,7 @@
                                     </h1>
                                 </header>
                                 <div class="card__image">
-                                    <img src="<%= product.image %>" alt="<%= product.title %>">
+                                    <img src="<%= product.imageUrl %>" alt="<%= product.title %>">
                                 </div>
                                 <div class="card__content">
                                     <h2 class="product__price">$
@@ -30,8 +30,9 @@
                                     <a href="/admin/edit-product/<%= product.id %>?edit=true" class="btn">Edit</a>
                                     <form action="/admin/delete-product" method="POST">
                                         <input type="hidden" value="<%= product.id %>" name="productId">
-                                        <button class="btn" type="submit" onclick="return confirm('Are You Sure You Want to delete this?')">Delete</button>
+                                        <button class="btn" type="submit">Delete</button>
                                     </form>
+
                                 </div>
                             </article>
                             <% } %>

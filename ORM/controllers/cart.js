@@ -12,6 +12,31 @@ exports.addToCart = (req, res, next) => {
 }
 
 exports.getCart = (req, res, next) => {
+  req.user.getCart()  // Fetch the cart for the user
+    .then(cart => {
+      if (!cart) {
+        // If no cart exists, create a new one for the user
+        return req.user.createCart();
+      }
+      return cart;  // If cart exists, return it
+    })
+    .then(cart => {
+      return cart.getProducts();  // Fetch all products associated with the cart
+    })
+    .then(products => {
+      console.log(products)
+      // Render the cart view with the products
+      res.render('shop/cart', {
+        path: '/cart',
+        pageTitle: 'Your Cart',
+        products: products  // Pass the products to the view
+      });
+    })
+    .catch(err => console.log(err));
+};
+
+/** Old code */
+exports.getCartOld = (req, res, next) => {
       Cart.findAll()
       .then(cartItems => {
         // Create an array of promises to fetch products for each cart item
