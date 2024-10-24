@@ -63,18 +63,15 @@ exports.getCartOld = (req, res, next) => {
       .catch(err => console.log(err));
  };
   
-  exports.postCartDeleteProduct = (req, res, next) => {
-    console.log("cart delete");
-
-    const prodId = req.body.productId;
-    console.log(prodId);
-    
-    req.user.getCart().then(cart => {
-      return cart.getProducts({where: {id: prodId}})
-    }).then(products => {
-      const product = products[0];
-      return product.cartItem.destroy();
-    }).then(result => {
-      res.redirect('/cart');
-    }).catch(err => console.log(err));
-  };
+exports.postCartDeleteProduct = (req, res, next) => {
+  const prodId = req.body.productId;
+  
+  req.user.getCart().then(cart => {
+    return cart.getProducts({where: {id: prodId}})
+  }).then(products => {
+    const product = products[0];
+    return product.cartItem.destroy();
+  }).then(result => {
+    res.redirect('/cart');
+  }).catch(err => console.log(err));
+};

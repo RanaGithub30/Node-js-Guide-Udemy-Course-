@@ -103,14 +103,6 @@ exports.postCart = (req, res, next) => {
     .catch(err => console.log(err));
 };
 
-exports.postCartDeleteProduct = (req, res, next) => {
-  const prodId = req.body.productId;
-  Product.findByPk(prodId, product => {
-    Cart.deleteProduct(prodId, product.price);
-    res.redirect('/cart');
-  });
-};
-
 exports.getOrders = (req, res, next) => {
   res.render('shop/orders', {
     path: '/orders',
