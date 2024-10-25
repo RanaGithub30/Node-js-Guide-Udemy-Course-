@@ -1,0 +1,3 @@
+/* Install Mongodb */
+
+npm i --save mongodb
