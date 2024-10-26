@@ -1,6 +1,13 @@
-const mongodb = require('mongodb');
-const mongoClient = mongodb.MongoClient;
+const mongoose = require('mongoose');
 
-/** create connection with mongo */
-mongoose.connect('mongodb://127.0.0.1:27017/mongoLearn1', { useNewUrlParser: true, useUnifiedTopology: true });
-mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGO_URI); // Options removed
+    console.log(`MongoDB connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    process.exit(1); // Stop the app if unable to connect
+  }
+};
+
+module.exports = connectDB;
