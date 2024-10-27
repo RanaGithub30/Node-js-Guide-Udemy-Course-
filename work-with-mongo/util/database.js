@@ -1,13 +1,23 @@
-const mongoose = require('mongoose');
+const mongodb = require('mongodb');
+const mongoClient = mongodb.MongoClient;
+let _db;
 
-const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGO_URI); // Options removed
-    console.log(`MongoDB connected: ${conn.connection.host}`);
-  } catch (error) {
-    console.error(`Error: ${error.message}`);
-    process.exit(1); // Stop the app if unable to connect
-  }
-};
+const mongoConnect = callback => {
+    mongoClient.connect(process.env.MONGO_URI).then(client => {
+        console.log("connected");
+        _db = client.db();
+        callback();
+    }).catch(err => console.log(err));
+}
 
-module.exports = connectDB;
+const getDb = () => {
+    if(_db){
+        return _db;
+    }
+    else{
+        return 'mongoLearn1';
+    }
+}
+
+module.exports.mongoConnect = mongoConnect;
+module.exports.getDb = getDb;
