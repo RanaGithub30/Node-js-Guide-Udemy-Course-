@@ -4,10 +4,11 @@ const getDb = require('../util/database').getDb;
 class User{
     static collectionName = "users";
     
-    constructor(name, email, id){
+    constructor(name, email, id, cart){
         this.name = name;
         this.email = email;
         this._id = id;
+        this.cart = cart; // {items: []}
     }
 
     save(){
@@ -28,6 +29,16 @@ class User{
 
         return dbOp.then()
         .catch(err => console.log(err));
+    }
+
+    static addToCart(product, prodId, userId){
+        // const updateCart = {items: [{...product, quantity: 1}]}; // add all the product data
+        const updateCart = {items: [{productId: prodId, quantity: 1}]}; // add only product id & quantity
+        const db = getDb();
+        return db.collection(User.collectionName).updateOne(
+            {_id: new mongodb.ObjectId(userId)}, 
+            {$set: {cart: updateCart}}
+        );
     }
 
     static findById(userId){

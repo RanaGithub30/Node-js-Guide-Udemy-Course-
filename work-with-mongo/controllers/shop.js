@@ -1,5 +1,6 @@
 const Product = require('../models/product');
 const Cart = require('../models/cart');
+const User = require('../models/user');
 
 exports.getProducts = (req, res, next) => {
   Product.fetchAll().then(products => {
@@ -56,10 +57,19 @@ exports.getCart = (req, res, next) => {
 
 exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.findById(prodId, product => {
-    Cart.addProduct(prodId, product.price);
-  });
-  res.redirect('/cart');
+
+  Product.findById(prodId).then(product => {
+    User.fetchAll().then(users => {
+      if(users.length >0 ){
+          const randUserIndex = Math.floor(Math.random() * users.length);
+          const randomId = users[randUserIndex]._id; // get random user id
+          
+          User.addToCart(product, prodId, randomId)
+          .then(() => {res.redirect('/cart');})
+          .catch(err => console.log(err));
+      }
+    }).catch(err => console.log(err));
+ }).catch(err => console.log(err));
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {
