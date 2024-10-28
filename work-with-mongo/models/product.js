@@ -5,12 +5,13 @@ class Product{
   static collectionName = 'products';
 
 
-  constructor(title, price, description, imageUrl, id){
+  constructor(title, price, description, imageUrl, id, userId){
       this.title = title;
       this.price = price;
       this.description = description;
       this.imageUrl = imageUrl;
-      this._id = id;
+      this._id = id ? id : null;
+      this.userId = userId ? userId : null;
   }
 
   /** Insert one data at a time */
@@ -24,7 +25,7 @@ class Product{
          console.log(this);
          dbOp = db.collection(Product.collectionName).updateOne(
           { _id: new mongodb.ObjectId(this._id) }, // Change this line
-          { $set: { title: this.title, price: this.price, description: this.description, imageUrl: this.imageUrl } } // Specify fields to update
+          { $set: { title: this.title, price: this.price, description: this.description, imageUrl: this.imageUrl, userId: this.userId } } // Specify fields to update
         );
     }
     else{

@@ -1,13 +1,17 @@
 const Product = require('../models/product');
+const User = require('../models/user');
 const mongodb = require('mongodb');
 const ObjectId = mongodb.ObjectId;
 
 exports.getAddProduct = (req, res, next) => {
-  res.render('admin/edit-product', {
-    pageTitle: 'Add Product',
-    path: '/admin/add-product',
-    editing: false
-  });
+  User.fetchAll().then(users => {
+    res.render('admin/edit-product', {
+      users: users,
+      pageTitle: 'Add Product',
+      path: '/admin/add-product',
+      editing: false
+    });
+  }).catch(err => console.log(err));
 };
 
 exports.postAddProduct = (req, res, next) => {
@@ -15,7 +19,8 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  const product = new Product(title, price, description, imageUrl);
+  const userId = req.body.user;
+  const product = new Product(title, price, description, imageUrl, null, userId);
   product.save().then(result => {
     res.redirect('/');
   }).catch(err => console.log(err));
@@ -31,12 +36,16 @@ exports.getEditProduct = (req, res, next) => {
     if (!product) {
       return res.redirect('/');
     }
+
+    User.fetchAll().then(users => {
     res.render('admin/edit-product', {
+      users: users,
       pageTitle: 'Edit Product',
       path: '/admin/edit-product',
       editing: editMode,
       product: product
     });
+    })
   }).catch(err => console.log(err));
 };
 
@@ -46,15 +55,16 @@ exports.postEditProduct = (req, res, next) => {
   const updatedPrice = req.body.price;
   const updatedImageUrl = req.body.imageUrl;
   const updatedDesc = req.body.description;
+  const userId = req.body.user;
   const updatedProduct = new Product(
     updatedTitle,
     updatedPrice,
     updatedDesc,
     updatedImageUrl,
-    prodId
+    prodId,
+    userId
   );
 
-  console.log(updatedProduct);
   updatedProduct.save().then(result => {
     console.log(result);
     res.redirect('/admin/products');
