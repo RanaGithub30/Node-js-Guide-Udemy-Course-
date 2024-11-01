@@ -1,4 +1,3 @@
-/* Steps to connect & Install Mongodb */
+/* Steps to connect & Install mongoose */
 
-npm i --save mongodb
-npm list mongoose
+npm i --save mongoose

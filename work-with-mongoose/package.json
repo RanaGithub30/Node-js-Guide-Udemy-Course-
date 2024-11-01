@@ -20,7 +20,7 @@
     "express": "^4.16.3",
     "express-handlebars": "^3.0.0",
     "mongodb": "^6.10.0",
-    "mongoose": "^8.7.3",
+    "mongoose": "^8.8.0",
     "pug": "^2.0.3"
   }
 }

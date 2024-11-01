@@ -1,5 +1,6 @@
 const path = require('path');
-const connectDB = require('./util/database').mongoConnect;
+// const connectDB = require('./util/database').mongoConnect;
+const mongoose = require('mongoose');
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -15,8 +16,8 @@ app.set('views', 'views');
 require('dotenv').config();
 
 const adminRoutes = require('./routes/admin');
-const shopRoutes = require('./routes/shop');
-const userRoutes = require('./routes/user');
+// const shopRoutes = require('./routes/shop');
+// const userRoutes = require('./routes/user');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -31,6 +32,7 @@ const PORT = process.env.PORT || 3000;
 
 // ;
 // Connect to the database
-connectDB(() => {
+console.log(process.env.MONGO_URI);
+mongoose.connect(process.env.MONGO_URI).then(result => {
     app.listen(3000);
-});
+}).catch(err => console.log(err));
