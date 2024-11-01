@@ -4,14 +4,12 @@ const mongodb = require('mongodb');
 const ObjectId = mongodb.ObjectId;
 
 exports.getAddProduct = (req, res, next) => {
-  User.fetchAll().then(users => {
     res.render('admin/edit-product', {
-      users: users,
+      users: [],
       pageTitle: 'Add Product',
       path: '/admin/add-product',
       editing: false
     });
-  }).catch(err => console.log(err));
 };
 
 exports.postAddProduct = (req, res, next) => {
@@ -20,8 +18,16 @@ exports.postAddProduct = (req, res, next) => {
   const price = req.body.price;
   const description = req.body.description;
   const userId = req.body.user;
-  const product = new Product(title, price, description, imageUrl, null, userId);
-  product.save().then(result => {
+  const product = new Product(
+    {
+      title: title,
+      price: price, 
+      description: description, 
+      imageUrl: imageUrl
+    }
+  );
+  product.save() // save function provided by mongoose
+  .then(result => {
     res.redirect('/');
   }).catch(err => console.log(err));
 };
@@ -72,7 +78,7 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll().then(products => {
+  Product.find().then(products => {
     res.render('admin/products', {
       prods: products,
       pageTitle: 'Admin Products',
