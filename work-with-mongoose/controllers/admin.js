@@ -1,7 +1,5 @@
 const Product = require('../models/product');
-// const User = require('../models/user');
-const mongodb = require('mongodb');
-const ObjectId = mongodb.ObjectId;
+const User = require('../models/user');
 
 exports.getAddProduct = (req, res, next) => {
     res.render('admin/edit-product', {
@@ -17,18 +15,28 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  const userId = req.body.user;
-  const product = new Product(
-    {
-      title: title,
-      price: price, 
-      description: description, 
-      imageUrl: imageUrl
-    }
-  );
-  product.save() // save function provided by mongoose
-  .then(result => {
-    res.redirect('/');
+  
+  // get random userid from user table
+  const allUser = User.find().then(users => {
+        const userLength = users.length;
+        const randomUser = Math.floor(Math.random() * userLength);
+        const randomUserId = users[randomUser]._id;
+        
+        const product = new Product(
+          {
+            title: title,
+            price: price, 
+            description: description, 
+            imageUrl: imageUrl,
+            userId: randomUserId
+          }
+        );
+
+        product.save() // save function provided by mongoose
+        .then(result => {
+          res.redirect('/');
+        }).catch(err => console.log(err));
+
   }).catch(err => console.log(err));
 };
 
@@ -75,7 +83,11 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.find().then(products => {
+  Product.find()
+  .select('title price imageUrl') // fetch selected fields from products table
+  .populate('userId', 'name') /** The populate function in Mongoose is used to replace the specified field (in this case, userId) with documents from a related collection.  */
+  .then(products => {
+    console.log(products);
     res.render('admin/products', {
       prods: products,
       pageTitle: 'Admin Products',

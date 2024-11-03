@@ -47,22 +47,22 @@ exports.getIndex = (req, res, next) => {
 //     .catch(err => console.log(err));
 // };
 
-// exports.postCart = (req, res, next) => {
-//   const prodId = req.body.productId;
+exports.postCart = (req, res, next) => {
+  const prodId = req.body.productId;
 
-//   Product.findById(prodId).then(product => {
-//     User.fetchAll().then(users => {
-//       if(users.length >0 ){
-//           const randUserIndex = Math.floor(Math.random() * users.length);
-//           const randomId = users[randUserIndex]._id; // get random user id
+  Product.findById(prodId).then(product => {
+    User.find().then(users => {
+      if(users.length >0 ){
+          const randUserIndex = Math.floor(Math.random() * users.length);
+          const randomId = users[randUserIndex]._id; // get random user id
           
-//           User.addToCart(product, prodId, randomId)
-//           .then(() => {res.redirect('/cart');})
-//           .catch(err => console.log(err));
-//       }
-//     }).catch(err => console.log(err));
-//  }).catch(err => console.log(err));
-// };
+          User.addToCart(product)
+          .then(() => {res.redirect('/cart');})
+          .catch(err => console.log(err));
+      }
+    }).catch(err => console.log(err));
+ }).catch(err => console.log(err));
+};
 
 // exports.postCartDeleteProduct = (req, res, next) => {
 //   const prodId = req.body.productId;

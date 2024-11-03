@@ -30,9 +30,7 @@ app.use(errorController.get404);
 
 const PORT = process.env.PORT || 3000;
 
-// ;
 // Connect to the database
-console.log(process.env.MONGO_URI);
 mongoose.connect(process.env.MONGO_URI).then(result => {
     app.listen(3000);
 }).catch(err => console.log(err));
