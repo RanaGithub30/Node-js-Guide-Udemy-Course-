@@ -34,34 +34,48 @@ exports.getIndex = (req, res, next) => {
 };
 
 
-// exports.getCart = (req, res, next) => {
-//   const user = new User(req.userId, req.userCart); // Pass userId and cart as needed
-//   User.getCart()
-//     .then(cartProducts => {
-//       res.render('shop/cart', {
-//         path: '/cart',
-//         pageTitle: 'Your Cart',
-//         products: cartProducts
-//       });
-//     })
-//     .catch(err => console.log(err));
-// };
+exports.getCart = (req, res, next) => {
+  User.find()
+    .populate('cart.items.productId') // Populate product details for each user's cart
+    .then(users => {
+      // Collect all users' cart items into an array
+      const allCartItems = users.map(user => {
+        return {
+          userId: user._id,
+          name: user.name,
+          cartItems: user.cart.items // This will include populated product details
+        };
+      });
+
+      res.render('shop/cart', {
+        users: allCartItems, // Pass all users' cart items to the view
+        pageTitle: 'All Users Cart',
+        path: '/cart'
+      });
+    })
+    .catch(err => console.log(err));
+};
 
 exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
 
-  Product.findById(prodId).then(product => {
-    User.find().then(users => {
-      if(users.length >0 ){
+  Product.findById(prodId)
+    .then(product => {
+      User.find().then(users => {
+        if (users.length > 0) {
           const randUserIndex = Math.floor(Math.random() * users.length);
-          const randomId = users[randUserIndex]._id; // get random user id
+          const randomUser = users[randUserIndex]; // Get random user document
           
-          User.addToCart(product)
-          .then(() => {res.redirect('/cart');})
-          .catch(err => console.log(err));
-      }
-    }).catch(err => console.log(err));
- }).catch(err => console.log(err));
+          // Call addToCart on the user instance
+          randomUser.addToCart(product)
+            .then(() => {
+              res.redirect('/cart');
+            })
+            .catch(err => console.log(err));
+        }
+      }).catch(err => console.log(err));
+    })
+    .catch(err => console.log(err));
 };
 
 // exports.postCartDeleteProduct = (req, res, next) => {
