@@ -1,0 +1,3 @@
+/* Steps to connect & Install mongoose */
+
+npm i --save mongoose

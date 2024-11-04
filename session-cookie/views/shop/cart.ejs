@@ -1,0 +1,34 @@
+<%- include('../includes/head.ejs') %>
+</head>
+
+<body>
+    <%- include('../includes/navigation.ejs') %>
+    <main>
+        <% if (users && users.length > 0) { %>
+            <% users.forEach(user => { %>
+                <h2><%= user.name %>'s Cart</h2>
+                <ul>
+                    <% if (user.cartItems.length > 0) { %>
+                        <% user.cartItems.forEach(p => { %>
+                            <li>
+                                <% if (p.productId) { %> <!-- Check if productId exists -->
+                                    <p><%= p.productId.title %> (<%= p.quantity %>)</p>
+                                    <form action="/cart-delete-item" method="POST">
+                                        <input type="hidden" value="<%= p.productId._id %>" name="productId">
+                                        <button class="btn" type="submit">Delete</button>
+                                    </form>
+                                <% } else { %>
+                                    <p>Product information not available</p>
+                                <% } %>
+                            </li>
+                        <% }) %>
+                    <% } else { %>
+                        <p>No Products in Cart!</p>
+                    <% } %>
+                </ul>
+            <% }) %>
+        <% } else { %>
+            <h1>No Users Found!</h1>
+        <% } %>
+    </main>
+    <%- include('../includes/end.ejs') %>
