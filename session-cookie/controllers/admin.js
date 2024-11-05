@@ -87,7 +87,6 @@ exports.getProducts = (req, res, next) => {
   .select('title price imageUrl') // fetch selected fields from products table
   .populate('userId', 'name') /** The populate function in Mongoose is used to replace the specified field (in this case, userId) with documents from a related collection.  */
   .then(products => {
-    console.log(products);
     res.render('admin/products', {
       prods: products,
       pageTitle: 'Admin Products',

@@ -23,6 +23,25 @@ const authRoutes = require('./routes/auth');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Middleware to parse cookies and set isAuthenticated flag
+app.use((req, res, next) => {
+    const cookie = req.get('Cookie');
+
+    if (cookie) {
+        const isLoggedInCookie = cookie.split(';').find(c => c.trim().startsWith('loggedIn='));
+        req.isAuthenticated = isLoggedInCookie && isLoggedInCookie.split('=')[1] === 'true';
+    } else {
+        req.isAuthenticated = false;
+    }
+    next();
+});
+
+// Middleware to make isAuthenticated available in all views
+app.use((req, res, next) => {
+    res.locals.isAuthenticated = req.isAuthenticated;
+    next();
+});
+
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
