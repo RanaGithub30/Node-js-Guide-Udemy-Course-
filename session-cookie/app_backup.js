@@ -1,29 +1,25 @@
 const path = require('path');
+// const connectDB = require('./util/database').mongoConnect;
 const mongoose = require('mongoose');
+
 const express = require('express');
 const bodyParser = require('body-parser');
+
+const errorController = require('./controllers/error');
 const session = require('express-session');
 const mongodbStore = require('connect-mongodb-session')(session);
 
-const errorController = require('./controllers/error');
 const app = express();
-require('dotenv').config();
-
-// MongoDB session store
 const store = new mongodbStore({
     uri: process.env.MONGO_URI
 });
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
+app.use(session({secret: 'secret-session', resave: false, saveUninitialized: false, store: store}));
 
-// Initialize session with MongoDB store
-app.use(session({
-    secret: 'secret-session',
-    resave: false,
-    saveUninitialized: false,
-    store: store
-}));
+// Load environment variables (if using dotenv)
+require('dotenv').config();
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
@@ -33,9 +29,22 @@ const authRoutes = require('./routes/auth');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Middleware to parse cookies and set isAuthenticated flag
+app.use((req, res, next) => {
+    const cookie = req.get('Cookie');
+
+    if (cookie) {
+        const isLoggedInCookie = cookie.split(';').find(c => c.trim().startsWith('loggedIn='));
+        req.isAuthenticated = isLoggedInCookie && isLoggedInCookie.split('=')[1] === 'true';
+    } else {
+        req.isAuthenticated = false;
+    }
+    next();
+});
+
 // Middleware to make isAuthenticated available in all views
 app.use((req, res, next) => {
-    res.locals.isAuthenticated = req.session.isLoggedIn || false;
+    res.locals.isAuthenticated = req.isAuthenticated;
     next();
 });
 
@@ -48,7 +57,7 @@ app.use(errorController.get404);
 
 const PORT = process.env.PORT || 3000;
 
-// Connect to the database and start the server
+// Connect to the database
 mongoose.connect(process.env.MONGO_URI).then(result => {
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    app.listen(3000);
 }).catch(err => console.log(err));

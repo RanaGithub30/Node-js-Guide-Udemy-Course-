@@ -1,3 +1,26 @@
 /* Steps to connect & Install mongoose */
 
 npm i --save mongoose
+
+/* Install sesssion using  */
+
+npm i --save express-session
+
+/* Session middleware details description in app.js */
+
+app.use(session({
+    // The secret used to sign the session ID cookie. It helps prevent tampering and should be a long, random string.
+    secret: 'secret-session', 
+
+    // If true, the session will be saved back to the store, even if it wasn't modified during the request.
+    // Setting it to false improves performance and prevents unnecessary session storage.
+    resave: false,
+
+    // If true, a new, empty session will be created and saved for each new client request, even if they don't modify it.
+    // Setting it to false ensures that a session is only created when data is added to it.
+    saveUninitialized: false
+}));
+
+/* Install mongodb session */
+
+npm i --save connect-mongodb-session
