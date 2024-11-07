@@ -2,28 +2,17 @@ const path = require('path');
 const mongoose = require('mongoose');
 const express = require('express');
 const bodyParser = require('body-parser');
-const session = require('express-session');
-const mongodbStore = require('connect-mongodb-session')(session);
-
+const sessionMiddleware = require('./util/session'); // Import session middleware
 const errorController = require('./controllers/error');
+
 const app = express();
 require('dotenv').config();
-
-// MongoDB session store
-const store = new mongodbStore({
-    uri: process.env.MONGO_URI
-});
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
-// Initialize session with MongoDB store
-app.use(session({
-    secret: 'secret-session',
-    resave: false,
-    saveUninitialized: false,
-    store: store
-}));
+// Use the imported session middleware
+app.use(sessionMiddleware);
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
