@@ -36,15 +36,22 @@
                 <a class="<%= path === '/user/list' ? 'active' : '' %>" href="/user/list">User List
                 </a>
             </li>
+            
+            <li class="main-header__item">
+                <a href="/logout">Logout
+                </a>
+            </li>
             <% } %>
 
             
         </ul>
+        <% if(!isAuthenticated){ %>
         <ul class="main-header__item-list">
             <li class="main-header__item">
                 <a href="/login">Login</a>
             </li>
         </ul>
+        <% } %>
     </nav>
 </header>
 
