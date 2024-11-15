@@ -4,14 +4,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const session = require('express-session');
-const sessionMiddleware = require('./util/session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 
 const app = express();
 require('dotenv').config();
-
-// Use the imported session middleware
-app.use(sessionMiddleware);
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -32,17 +28,11 @@ const store = new MongoDBStore({
   collection: 'sessions'
 });
 
-// Middleware to make isAuthenticated available in all views
-app.use((req, res, next) => {
-    res.locals.isAuthenticated = req.session.isLoggedIn || false;
-    next();
-});
-
 // Set `isAuthenticated` for all views
 app.use((req, res, next) => {
     res.locals.isAuthenticated = req.session.isLoggedIn; // or however you determine if a user is logged in
     next();
-  });  
+});  
 
 const PORT = process.env.PORT || 3000;
 
