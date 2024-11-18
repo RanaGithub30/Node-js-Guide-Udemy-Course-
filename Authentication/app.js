@@ -1,24 +1,46 @@
 const path = require('path');
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const session = require('express-session');
-const sessionMiddleware = require('./util/session');
 const MongoDBStore = require('connect-mongodb-session')(session);
+const csrf = require('csurf');
 
-const app = express();
 require('dotenv').config();
 
-// Use the imported session middleware
-app.use(sessionMiddleware);
+const app = express();
+
+const store = new MongoDBStore({
+  uri: process.env.MONGO_URI,
+  collection: 'sessions'
+});
+
+const csrfProtection = csrf();
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
+// Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(
+  session({
+    secret: 'my secret',
+    resave: false,
+    saveUninitialized: false,
+    store: store
+  })
+);
+app.use(csrfProtection); // CSRF middleware must be after the session middleware
 
+// Pass CSRF token and authentication info to all views
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn || false;
+  res.locals.csrfToken = req.csrfToken(); // Makes csrfToken available in all views
+  next();
+});
+
+// Routes
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
@@ -27,26 +49,17 @@ app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
 
-const store = new MongoDBStore({
-  uri: process.env.MONGO_URI,
-  collection: 'sessions'
+// Error Handling
+app.use((req, res) => {
+  res.status(404).render('404', { pageTitle: 'Page Not Found', isAuthenticated: req.session.isLoggedIn });
 });
-
-// Middleware to make isAuthenticated available in all views
-app.use((req, res, next) => {
-    res.locals.isAuthenticated = req.session.isLoggedIn || false;
-    next();
-});
-
-// Set `isAuthenticated` for all views
-app.use((req, res, next) => {
-    res.locals.isAuthenticated = req.session.isLoggedIn; // or however you determine if a user is logged in
-    next();
-  });  
 
 const PORT = process.env.PORT || 3000;
 
 // Connect to the database and start the server
-mongoose.connect(process.env.MONGO_URI).then(result => {
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-}).catch(err => console.log(err));
+mongoose
+.connect(process.env.MONGO_URI)
+.then(() => {
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+})
+.catch(err => console.log(err));
