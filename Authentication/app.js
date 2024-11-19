@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
+const flash = require('connect-flash'); // For Flash message
 
 require('dotenv').config();
 
@@ -32,6 +33,7 @@ app.use(
   })
 );
 app.use(csrfProtection); // CSRF middleware must be after the session middleware
+app.use(flash());
 
 // Pass CSRF token and authentication info to all views
 app.use((req, res, next) => {
