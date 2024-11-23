@@ -1,3 +1,4 @@
+const crypto = require('crypto'); // a builtin libtrary to help us generate a secure random values
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 
@@ -95,3 +96,33 @@ exports.postLogout = (req, res, next) => {
     res.redirect('/');
   });
 };
+
+/**
+ * Reset/Forget Password
+*/
+
+exports.resetPassword = (req, res, next) => {
+  let message = req.flash('error');
+  if(message.length > 0){
+      message = message[0]
+  }else{
+      message = null;
+  }
+
+  res.render('auth/reset-password', {
+    pageTitle: "Forget Password",
+    path: "/reset/password",
+    errorMessage: message
+  });
+}
+
+// working here......
+
+
+// exports.postResetPassword = (req, res, next) => {
+//   const email = req.body.email;
+
+//   crypto.randomBytes(32, (err, buffer) => {
+
+//   });
+// }
