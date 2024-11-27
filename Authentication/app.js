@@ -6,6 +6,7 @@ const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash'); // For flash messages
+const User = require('./models/user');
 require('dotenv').config(); // Load environment variables
 
 const app = express();
@@ -33,6 +34,24 @@ app.use(
     store: store
   })
 );
+
+app.use((req, res, next) => {
+  if (!req.session.user) {
+    return next();
+  }
+  User.findById(req.session.user._id)
+    .then(user => {
+      if (user) {
+        req.user = user; // Attach the user object to the request
+      }
+      next();
+    })
+    .catch(err => {
+      console.log(err);
+      next();
+    });
+});
+
 app.use(csrfProtection); // CSRF middleware must come after the session middleware
 app.use(flash());
 
