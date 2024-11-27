@@ -1,6 +1,7 @@
 const crypto = require('crypto'); // a builtin libtrary to help us generate a secure random values
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
+const nodemailer = require('nodemailer');
 
 exports.getLogin = (req, res, next) => {
   let message = req.flash('error');
@@ -119,10 +120,60 @@ exports.resetPassword = (req, res, next) => {
 // working here......
 
 
-// exports.postResetPassword = (req, res, next) => {
-//   const email = req.body.email;
+exports.postResetPassword = (req, res, next) => {
+  const email = req.body.email;
 
-//   crypto.randomBytes(32, (err, buffer) => {
+  crypto.randomBytes(32, (err, buffer) => {
+    if(err){
+        console.log(err);
+        return res.redirect('/reset/password');
+    }
 
-//   });
-// }
+    // generate token
+    const token = buffer.toString('hex');
+    User.findOne({email: email})
+    .then(user => {
+        if(!user){
+            req.flash('error', 'No User Account Found with this Email');
+            return res.redirect('/reset/password');
+        }
+
+        user.resetToken = token;
+        user.resetTokenExpiration = Date.now() + 3600000; // 3600000 in ms ==> 1 hour
+        return user.save(); 
+    })
+    .then(result => {
+
+      // Send the reset email
+      const resetLink = `http://localhost:3000/reset/password/${token}`; // Replace with your domain in production
+
+      // Set up the email
+      const transporter = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST, // Use your email service provider
+        port: process.env.EMAIL_PORT,
+        auth: {
+          user: process.env.EMAIL_USER, // Replace with your credentials
+          pass: process.env.EMAIL_PASS
+        }
+      });
+
+      const mailOptions = {
+        to: email,
+        from: 'no-reply@example.com', // Replace with your sender email
+        subject: 'Password Reset',
+        html: `
+          <p>You requested a password reset</p>
+          <p>Click the link below to reset your password:</p>
+          <a href="${resetLink}">${resetLink}</a>
+          <p>If you didn't request this, please ignore this email.</p>
+        `
+      };
+
+      transporter.sendMail(mailOptions);
+      return res.redirect('/reset/password');
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  });
+}
