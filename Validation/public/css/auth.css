@@ -1,0 +1,16 @@
+.login-form {
+  width: 20rem;
+  max-width: 90%;
+  margin: auto;
+  display: block;
+}
+
+.user-message-err{
+  text-align: center; 
+  background-color: red; 
+  color: white; 
+  font-weight: bold; 
+  height: 35px; 
+  width: 350px; 
+  margin-left: 36%;
+}
