@@ -1,4 +1,5 @@
 const Product = require('../models/product');
+const { validationResult } = require('express-validator');
 
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
@@ -15,6 +16,17 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
+  const errors = validationResult(req);
+  if(!errors.isEmpty()){
+      return res.status(422).render('admin/edit-product', {
+      path: '/admin/add-product',
+      pageTitle: 'Add Product',
+      isAuthenticated: true,
+      csrfToken: req.csrfToken(),
+      editing: false,
+      errorMessage: errors.array()
+    });
+  }
   const product = new Product({
     title: title,
     price: price,
@@ -61,6 +73,28 @@ exports.postEditProduct = (req, res, next) => {
   const updatedPrice = req.body.price;
   const updatedImageUrl = req.body.imageUrl;
   const updatedDesc = req.body.description;
+  const errors = validationResult(req);
+  const editMode = true;
+  console.log(errors.array());
+  if(!errors.isEmpty()){
+    const product = {
+      _id: prodId,
+      title: updatedTitle,
+      price: updatedPrice,
+      description: updatedDesc,
+      imageUrl: updatedImageUrl
+    };
+
+    return res.status(422).render('admin/edit-product', {
+      pageTitle: 'Edit Product',
+      path: '/admin/edit-product',
+      editing: editMode,
+      isAuthenticated: true,
+      csrfToken: req.csrfToken(),
+      product: product,
+      errorMessage: errors.array()
+    });
+  }
 
   Product.findById(prodId)
     .then(product => {
