@@ -1,0 +1,99 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  /* Container Styles */
+  .container {
+    background-color: #fff;
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+  }
+  
+  /* Heading */
+  h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  p {
+    text-align: center;
+    color: #666;
+    margin-bottom: 20px;
+  }
+  
+  /* Labels and Inputs */
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: bold;
+  }
+  
+  input[type="text"],
+  input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+  
+  /* Button Styles */
+  button.registerbtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  
+  button.registerbtn:hover {
+    background-color: #45a049;
+  }
+  
+  /* Sign-in Link */
+  .container.signin {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .container.signin a {
+    color: #4CAF50;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .container.signin a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Add responsiveness */
+  @media (max-width: 480px) {
+    .container {
+      padding: 15px;
+    }
+  
+    button.registerbtn {
+      font-size: 14px;
+    }
+  }  
