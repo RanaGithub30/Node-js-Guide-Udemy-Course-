@@ -8,6 +8,18 @@
 
     <main>
         <form class="login-form" action="/signup" method="POST">
+
+            <!-- Display Validation Errors -->
+            <% if (errorMessage.length > 0) { %>
+                <div class="error-messages">
+                    <ul>
+                        <% errorMessage.forEach(error => { %>
+                            <li><%= error.msg %></li>
+                        <% }) %>
+                    </ul>
+                </div>
+            <% } %>
+
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <div class="form-control">
                 <label for="email">E-Mail</label>
