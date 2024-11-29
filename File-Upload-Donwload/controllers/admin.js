@@ -13,10 +13,24 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
   const title = req.body.title;
-  const imageUrl = req.body.imageUrl;
+  const imageUrl = req.file;
   const price = req.body.price;
   const description = req.body.description;
   const errors = validationResult(req);
+  
+  if(!imageUrl){
+    return res.status(422).render('admin/edit-product', {
+      path: '/admin/add-product',
+      pageTitle: 'Add Product',
+      isAuthenticated: true,
+      csrfToken: req.csrfToken(),
+      editing: false,
+      errorMessage: [{msg: 'Attached File is not a Valid Image'}]
+    });
+  }
+
+  const image = imageUrl.path;
+
   if(!errors.isEmpty()){
       return res.status(422).render('admin/edit-product', {
       path: '/admin/add-product',
@@ -31,7 +45,7 @@ exports.postAddProduct = (req, res, next) => {
     title: title,
     price: price,
     description: description,
-    imageUrl: imageUrl,
+    imageUrl: image,
     userId: req.user
   });
   product

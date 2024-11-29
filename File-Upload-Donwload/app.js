@@ -7,6 +7,9 @@ const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash'); // For flash messages
 const User = require('./models/user');
+const multer = require('multer'); // for file handling
+const fs = require('fs');
+
 require('dotenv').config(); // Load environment variables
 
 const app = express();
@@ -23,8 +26,37 @@ const csrfProtection = csrf();
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
+/**
+ * File Uplaod Code
+*/
+
+// Ensure the directory exists or create it
+const uploadDirectory = path.join(__dirname, 'images');
+if (!fs.existsSync(uploadDirectory)) {
+  fs.mkdirSync(uploadDirectory, { recursive: true }); // Create the directory if it doesn't exist
+}
+
+const fileStorage = multer.diskStorage({
+      destination: (req, file, cb) => {
+        cb(null, 'images'); // first parameter is for any error message, second one is file destination
+      },
+      filename: (req, file, cb) => {
+        cb(null, new Date().toISOString()+'-'+file.originalname)
+      }
+});
+
+const fileFilter = (req, file, cb) => {
+      if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg'){
+              cb(null, true);
+      }
+      else{
+              cb(null, false);
+      }
+}
+
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(multer({storage: fileStorage, fileFilter: fileFilter}).single('image'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(
   session({
@@ -86,11 +118,11 @@ app.use((req, res, next) => {
 const PORT = process.env.PORT || 3000;
 
 mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  })
-  .then(() => {
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-  })
-  .catch(err => console.log(err));
+.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => {
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+})
+.catch(err => console.log(err));
