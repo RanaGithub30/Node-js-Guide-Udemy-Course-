@@ -20,7 +20,8 @@ exports.getLogin = (req, res, next) => {
     pageTitle: 'Login',
     isAuthenticated: false,
     csrfToken: req.csrfToken(),
-    errorMessage: message
+    errorMessage: message,
+    oldInput: {}
   });
 };
 
@@ -29,7 +30,8 @@ exports.getSignup = (req, res, next) => {
     path: '/signup',
     pageTitle: 'Signup',
     isAuthenticated: false,
-    csrfToken: req.csrfToken()
+    csrfToken: req.csrfToken(),
+    oldInput: {}
   });
 };
 
@@ -43,15 +45,22 @@ exports.postLogin = (req, res, next) => {
       pageTitle: 'login',
       isAuthenticated: false,
       csrfToken: req.csrfToken(),
-      errorMessage: errors.array()
+      errorMessage: errors.array(),
+      oldInput: {email: email, password: password}
     });
   }
 
   User.findOne({email: email})
     .then(user => {
       if(!user){
-        req.flash('error', 'Invalid Email or Password');
-        return res.redirect('/login');
+        return res.render('auth/login', {
+          path: '/login',
+          pageTitle: 'Login',
+          isAuthenticated: false,
+          csrfToken: req.csrfToken(),
+          errorMessage: [{msg: 'Invalid Email or Password'}],
+          oldInput: {email: email, password: password}
+        });
       }
 
       // compare the password
@@ -90,14 +99,22 @@ exports.postSignup = (req, res, next) => {
       pageTitle: 'Signup',
       isAuthenticated: false,
       csrfToken: req.csrfToken(),
-      errorMessage: errors.array()
+      errorMessage: errors.array(),
+      oldInput: {email: email, password: password, confirmPassword: confirmPassword}
     });
   }
 
   User.findOne({email: email})
   .then(userDoc => {
     if(userDoc){
-      return res.redirect('/signup');
+      return res.render('auth/signup', {
+        path: '/signup',
+        pageTitle: 'Signup',
+        isAuthenticated: false,
+        csrfToken: req.csrfToken(),
+        errorMessage: [{msg: 'User Already Exist'}],
+        oldInput: {email: email, password: password, confirmPassword: confirmPassword}
+      });
     }else{
         return bcrypt.hash(password, 12)
         .then(hashedPassword => {

@@ -7,15 +7,15 @@ router.get('/login', authController.getLogin);
 router.get('/signup', authController.getSignup);
 router.post('/login', 
     [
-        check('email', 'Enter a Valid Email').isEmail(),
-        body('password', 'Please Enter a Password with Atleast 4 Charecter Long').isLength({min: 4})
+        check('email', 'Enter a Valid Email').isEmail().normalizeEmail(),
+        body('password', 'Please Enter a Password with Atleast 4 Charecter Long').isLength({min: 4}).trim()
     ],
     authController.postLogin);
 router.post('/signup', 
     [
-        check('email').isEmail().withMessage('Please Enter a Valid Email'),
-        body('password', 'Please Enter a Password with Atleast 4 Charecter Long').isLength({min: 4, max: 20}),
-        body('confirmPassword').custom((value, {req}) => {
+        check('email').isEmail().withMessage('Please Enter a Valid Email').normalizeEmail(),
+        body('password', 'Please Enter a Password with Atleast 4 Charecter Long').isLength({min: 4, max: 20}).trim(),
+        body('confirmPassword').trim().custom((value, {req}) => {
               if(value !== req.body.password){
                     throw new Error('Password & Confirn Password Must Same');
               }

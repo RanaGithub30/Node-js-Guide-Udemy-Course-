@@ -14,3 +14,8 @@
   width: 350px; 
   margin-left: 36%;
 }
+
+.invalid{
+  border: 2px solid red;
+  background-color: #ffe6e6;
+}

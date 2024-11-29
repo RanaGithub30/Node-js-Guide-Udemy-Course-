@@ -23,15 +23,15 @@
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <div class="form-control">
                 <label for="email">E-Mail</label>
-                <input type="email" name="email" id="email">
+                <input class="<%= errorMessage.some(err => err.path === 'email') ? 'invalid' : '' %>" type="email" name="email" id="email" value="<%= (oldInput) ? (oldInput.email) : '' %>">
             </div>
             <div class="form-control">
                 <label for="password">Password</label>
-                <input type="password" name="password" id="password">
+                <input type="password" class="<%= errorMessage.some(err => err.path === 'password') ? 'invalid' : '' %>" name="password" id="password" value="<%= (oldInput) ? (oldInput.password) : '' %>">
             </div>
             <div class="form-control">
                 <label for="confirmPassword">Confirm Password</label>
-                <input type="password" name="confirmPassword" id="confirmPassword">
+                <input type="password" class="<%= errorMessage.some(err => err.path === 'confirmPassword') ? 'invalid' : '' %>" name="confirmPassword" id="confirmPassword" value="<%= (oldInput) ? (oldInput.confirmPassword) : '' %>">
             </div>
             <button class="btn" type="submit">Signup</button>
         </form>
