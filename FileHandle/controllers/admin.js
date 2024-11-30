@@ -1,5 +1,6 @@
 const Product = require('../models/product');
 const { validationResult } = require('express-validator');
+const fileUploadHelper = require('../util/fileUpload');
 
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
@@ -7,16 +8,17 @@ exports.getAddProduct = (req, res, next) => {
     path: '/admin/add-product',
     editing: false,
     isAuthenticated: req.session.isLoggedIn,
-    csrfToken: req.csrfToken()
+    csrfToken: req.csrfToken(),
   });
 };
 
-exports.postAddProduct = (req, res, next) => {
+exports.postAddProduct = async (req, res, next) => {
   const title = req.body.title;
-  const imageUrl = req.file;
+  const imageUrl = req.files[0];
   const price = req.body.price;
   const description = req.body.description;
   const errors = validationResult(req);
+  const uploadFile = await fileUploadHelper.uploadFile(req.files[0], '../images');
   
   if(!imageUrl){
     return res.status(422).render('admin/edit-product', {
@@ -29,7 +31,7 @@ exports.postAddProduct = (req, res, next) => {
     });
   }
 
-  const image = imageUrl.path;
+  const image = req.files[0].filename;
 
   if(!errors.isEmpty()){
       return res.status(422).render('admin/edit-product', {
@@ -51,7 +53,6 @@ exports.postAddProduct = (req, res, next) => {
   product
     .save()
     .then(result => {
-      console.log('Created Product');
       res.redirect('/admin/products');
     })
     .catch(err => {
@@ -75,7 +76,8 @@ exports.getEditProduct = (req, res, next) => {
         path: '/admin/edit-product',
         editing: editMode,
         product: product,
-        isAuthenticated: req.session.isLoggedIn
+        isAuthenticated: req.session.isLoggedIn,
+        csrfToken: req.csrfToken(),
       });
     })
     .catch(err => console.log(err));
@@ -89,7 +91,7 @@ exports.postEditProduct = (req, res, next) => {
   const updatedDesc = req.body.description;
   const errors = validationResult(req);
   const editMode = true;
-  console.log(errors.array());
+  
   if(!errors.isEmpty()){
     const product = {
       _id: prodId,
@@ -119,7 +121,6 @@ exports.postEditProduct = (req, res, next) => {
       return product.save();
     })
     .then(result => {
-      console.log('UPDATED PRODUCT!');
       res.redirect('/admin/products');
     })
     .catch(err => console.log(err));
@@ -127,8 +128,6 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
   Product.find({userId: req.user._id})
-    // .select('title price -_id')
-    // .populate('userId', 'name')
     .then(products => {
       console.log(products);
       res.render('admin/products', {
