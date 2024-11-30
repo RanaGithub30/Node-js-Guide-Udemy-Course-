@@ -32,6 +32,7 @@ app.set('views', 'views');
 
 // Ensure the directory exists or create it
 const uploadDirectory = path.join(__dirname, 'images');
+console.log(uploadDirectory);
 if (!fs.existsSync(uploadDirectory)) {
   fs.mkdirSync(uploadDirectory, { recursive: true }); // Create the directory if it doesn't exist
 }
