@@ -6,6 +6,8 @@ const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash');
+const error = require('./controllers/error');
+const gv = require('./middlewares/globalVeriables');
 require('dotenv').config();
 
 const app = express();
@@ -35,39 +37,25 @@ app.use(
 
 // CSRF Middleware
 app.use(csrfProtection);
-
-// Flash Middleware
 app.use(flash());
-
-// Set default parameters for views
-app.use((req, res, next) => {
-    res.locals.csrfToken = req.csrfToken(); // Set CSRF token
-    res.locals.errorMessage = []; // Default empty error messages
-    res.locals.oldInput = undefined; // Default old input as undefined
-    next();
-});
+app.use(gv);
 
 // Routes
 const authRoute = require('./routes/auth');
 app.use(authRoute);
 
 // 404 Middleware
-app.use((req, res, next) => {
-    res.status(404).render('404', {
-        pageTitle: 'Page Not Found',
-        path: '/404',
-    });
-});
+app.use(error.get404);
 
 // Connect to the database and start the server
 const PORT = process.env.PORT || 3000;
 
 mongoose
-  .connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-  })
-  .then(() => {
-      app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-  })
-  .catch(err => console.log(err));
+.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
+.then(() => {
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+})
+.catch(err => console.log(err));

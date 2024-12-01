@@ -1,7 +1,8 @@
 <%- include('../includes/header')  %>
-<form action="#">
+<form action="/post/login" method="POST">
    <%- include('../includes/message'),{ errorMessage: errorMessage }  %>
 
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <div class="container" style="width: 135% !important;">
       <h1>Sign In</h1>
       <hr>
@@ -11,7 +12,6 @@
   
       <label for="psw"><b>Password</b></label>
       <input type="password" placeholder="Enter Password" name="psw" id="psw" required>
-
       <hr>
   
       <button type="submit" class="registerbtn">Signin</button>
