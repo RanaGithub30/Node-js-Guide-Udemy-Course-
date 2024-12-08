@@ -17,6 +17,7 @@ exports.postAddProduct = async (req, res, next) => {
   const price = req.body.price;
   const description = req.body.description;
   const errors = validationResult(req);
+  console.log(imageUrl);
   
   if(!imageUrl){
     return res.status(422).render('admin/edit-product', {
@@ -50,7 +51,8 @@ exports.postAddProduct = async (req, res, next) => {
     title: title,
     price: price,
     description: description,
-    userId: req.user._id
+    userId: req.user._id,
+    imageUrl: image
   });
   product
     .save()

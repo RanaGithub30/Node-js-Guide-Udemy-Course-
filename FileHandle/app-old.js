@@ -7,10 +7,7 @@ const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash'); // For flash messages
 const User = require('./models/user');
-const multer = require('multer'); // for file handling
-const fs = require('fs');
-const upload = require('./util/fileUpload');
-
+const multer = require('multer');
 require('dotenv').config(); // Load environment variables
 
 const app = express();
@@ -23,46 +20,40 @@ const store = new MongoDBStore({
 
 // CSRF Protection
 const csrfProtection = csrf();
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+      cb(null, 'images/') // Specify the directory where files will be stored
+  },
+  filename: function (req, file, cb) {
+      // Generate a unique filename for the uploaded file
+      cb(null, Date.now() + '-' + file.originalname)
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 // Middleware
-app.use(express.static(path.join(__dirname, 'public'))); // Serve static files first
-app.use(bodyParser.urlencoded({ extended: false })); // Parse request body
-
-// Session Middleware should be set before CSRF protection and user authentication
+app.use(multer({storage: storage, fileFilter: fileFilter}).single('image'));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(
-    session({
-      secret: process.env.SESSION_SECRET || 'my secret',
-      resave: false,
-      saveUninitialized: false,
-      store: store,
-      cookie: {
-        secure: false, // Set to true if using https
-        sameSite: 'Lax' // You can also use 'None' for cross-site cookies (if using HTTPS)
-      }
-    })
-);  
+  session({
+    secret: process.env.SESSION_SECRET || 'my secret', // Use an environment variable for better security
+    resave: false,
+    saveUninitialized: false,
+    store: store
+  })
+);
 
-// CSRF Protection Middleware after session middleware
-app.use(csrfProtection);
-app.use(flash()); // Flash messages should come after session and csrf middleware
-
-// File Upload Middleware (after csrf and flash, so we can safely handle the file)
-// app.post('/upload', (req, res, next) => {
-//   upload.single('image')(req, res, err => {
-//     if (err) {
-//       return res.status(400).send('Error during file upload: ' + err.message);
-//     }
-//     if (!req.file) {
-//       return res.status(400).send('Invalid file type or no file uploaded');
-//     }
-//     res.send('File uploaded successfully!');
-//   });
-// });
-
-// User Middleware (attach user to the request object after session is set)
 app.use((req, res, next) => {
   if (!req.session.user) {
     return next();
@@ -80,7 +71,10 @@ app.use((req, res, next) => {
     });
 });
 
-// Global Variables for Views (Make CSRF token and flash messages available to views)
+app.use(csrfProtection); // CSRF middleware must come after the session middleware
+app.use(flash());
+
+// Global Variables for Views
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isLoggedIn || false;
   res.locals.csrfToken = req.csrfToken(); // Makes CSRF token available in all views
@@ -98,7 +92,7 @@ app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
 
-// Error Handling Middleware (404)
+// Error Handling Middleware
 app.use((req, res, next) => {
   res.status(404).render('404', {
     pageTitle: 'Page Not Found',
@@ -111,11 +105,11 @@ app.use((req, res, next) => {
 const PORT = process.env.PORT || 3000;
 
 mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  })
-  .then(() => {
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-  })
-  .catch(err => console.log(err));
+.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => {
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+})
+.catch(err => console.log(err));
