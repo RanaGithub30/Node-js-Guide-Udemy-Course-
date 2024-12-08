@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const Product = require('../models/product');
 const Order = require('../models/order');
 
@@ -124,3 +126,45 @@ exports.getOrders = (req, res, next) => {
     })
     .catch(err => console.log(err));
 };
+
+/**
+ * Get Invoice (Download Invoice)
+*/
+
+exports.getInvoice = (req, res, next) => {
+    const orderId = req.params.orderId;
+    // check the order for perticular user
+    Order.findById(orderId).then(order => {
+        if(!order){
+            return next(new Error('No Order Found'));
+        }
+
+        if(order.user.userId.toString() !== req.user._id.toString()){
+            return next(new Error('Unauthorized'));
+        }
+
+        // if the order belongs to logedin user then he can access & download the invoice
+        const invoiceName = 'invoice.pdf';
+        const invoicePath = path.join('data', 'invoices', invoiceName);
+
+        /** This is file preloading & download code, it can be suitable for small file but for large file it is good to use 
+         * file striming using chunk for fast & efficient way */
+
+        // fs.readFile(invoicePath, (err, data) => {
+        //   if(err){
+        //       return next(err);
+        //   }
+        //   res.setHeader('Content-Type', 'application/pdf');
+        //   res.setHeader('Content-Disposition', `attachment; filename="${invoiceName}"`);
+        //   res.send(data);
+        // });
+
+        /** Code using File Streaming */
+        const file = fs.createReadStream(invoicePath);
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${invoiceName}"`);
+        file.pipe(res);
+
+    }).catch(err => next(err));
+    
+}
