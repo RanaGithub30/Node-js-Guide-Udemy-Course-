@@ -25,6 +25,9 @@
             </div>
             <div class="form-control">
                 <label for="image">Image</label>
+                <% if(editing){ %>
+                    <img src="/<%= product.imageUrl %>" alt="image" width="325">
+                <% } %>
                 <input type="file" name="image" id="image">
             </div>
             <div class="form-control">
