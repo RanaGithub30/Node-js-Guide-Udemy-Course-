@@ -1,6 +1,5 @@
 const Product = require('../models/product');
 const { validationResult } = require('express-validator');
-const fileUploadHelper = require('../util/fileUpload');
 
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
@@ -14,25 +13,29 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = async (req, res, next) => {
   const title = req.body.title;
-  const imageUrl = req.files[0];
+  const imageUrl = req.file;
   const price = req.body.price;
   const description = req.body.description;
   const errors = validationResult(req);
-  const uploadFile = await fileUploadHelper.uploadFile(req.files[0], '../images');
   
   if(!imageUrl){
     return res.status(422).render('admin/edit-product', {
       path: '/admin/add-product',
       pageTitle: 'Add Product',
       isAuthenticated: true,
-      csrfToken: req.csrfToken(),
       editing: false,
+      hasError: true,
+      product: {
+          title: title,
+          price: price,
+          description: description
+      },
+      csrfToken: req.csrfToken(),
       errorMessage: [{msg: 'Attached File is not a Valid Image'}]
     });
   }
 
-  const image = req.files[0].filename;
-
+  const image = imageUrl.path;
   if(!errors.isEmpty()){
       return res.status(422).render('admin/edit-product', {
       path: '/admin/add-product',
@@ -47,8 +50,7 @@ exports.postAddProduct = async (req, res, next) => {
     title: title,
     price: price,
     description: description,
-    imageUrl: image,
-    userId: req.user
+    userId: req.user._id
   });
   product
     .save()
@@ -87,7 +89,7 @@ exports.postEditProduct = (req, res, next) => {
   const prodId = req.body.productId;
   const updatedTitle = req.body.title;
   const updatedPrice = req.body.price;
-  const updatedImageUrl = req.body.imageUrl;
+  const updatedImage = req.file;
   const updatedDesc = req.body.description;
   const errors = validationResult(req);
   const editMode = true;
@@ -98,7 +100,6 @@ exports.postEditProduct = (req, res, next) => {
       title: updatedTitle,
       price: updatedPrice,
       description: updatedDesc,
-      imageUrl: updatedImageUrl
     };
 
     return res.status(422).render('admin/edit-product', {
@@ -117,7 +118,9 @@ exports.postEditProduct = (req, res, next) => {
       product.title = updatedTitle;
       product.price = updatedPrice;
       product.description = updatedDesc;
-      product.imageUrl = updatedImageUrl;
+      if(updatedImage){
+        product.imageUrl = updatedImage.path;
+      }
       return product.save();
     })
     .then(result => {
