@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const flash = require('connect-flash');
 const User = require('./models/user');
+const error = require('./middleware/error');
 require('dotenv').config();
 
 // Import Middleware
@@ -58,13 +59,7 @@ app.use(shopRoutes);
 app.use(authRoutes);
 
 // Error Handling Middleware
-app.use((req, res, next) => {
-  res.status(404).render('404', {
-    pageTitle: 'Page Not Found',
-    path: '/404',
-    isAuthenticated: req.session.isLoggedIn,
-  });
-});
+app.use(error);
 
 // Connect to the database and start the server
 const PORT = process.env.PORT || 3000;
