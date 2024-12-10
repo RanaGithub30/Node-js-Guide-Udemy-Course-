@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const Product = require('../models/product');
 const Order = require('../models/order');
+const pdfkit = require('pdfkit'); // to generate dynamic pdf
 
 exports.getProducts = (req, res, next) => {
   Product.find({userId: req.user._id})
@@ -147,6 +148,24 @@ exports.getInvoice = (req, res, next) => {
         const invoiceName = 'invoice.pdf';
         const invoicePath = path.join('data', 'invoices', invoiceName);
 
+        const pdfDoc = new pdfkit();
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${invoiceName}"`);
+        pdfDoc.pipe(fs.createWriteStream(invoicePath));
+        pdfDoc.pipe(res);
+        pdfDoc.fontSize(26).text('Invoice', {
+          underline: true,
+        })
+        pdfDoc.text('-----------------------------');
+        let totalPrice = 0;
+        order.products.forEach(prod => {
+          totalPrice += prod.quantity * prod.product.price;
+          pdfDoc.fontSize(14).text(prod.product.title + '-' + prod.quantity + 'X' + '$' + prod.product.price);
+        })
+        pdfDoc.text('-----------------------------');
+        pdfDoc.fontSize(20).text('Total Price - '+ '$'+ totalPrice);
+        pdfDoc.end();
+
         /** This is file preloading & download code, it can be suitable for small file but for large file it is good to use 
          * file striming using chunk for fast & efficient way */
 
@@ -160,10 +179,10 @@ exports.getInvoice = (req, res, next) => {
         // });
 
         /** Code using File Streaming */
-        const file = fs.createReadStream(invoicePath);
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename="${invoiceName}"`);
-        file.pipe(res);
+        // const file = fs.createReadStream(invoicePath);
+        // res.setHeader('Content-Type', 'application/pdf');
+        // res.setHeader('Content-Disposition', `attachment; filename="${invoiceName}"`);
+        // file.pipe(res);
 
     }).catch(err => next(err));
     
