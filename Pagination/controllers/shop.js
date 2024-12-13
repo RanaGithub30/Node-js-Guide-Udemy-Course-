@@ -3,6 +3,7 @@ const path = require('path');
 const Product = require('../models/product');
 const Order = require('../models/order');
 const pdfkit = require('pdfkit'); // to generate dynamic pdf
+const ITEMS_PER_PAGES = 3;
 
 exports.getProducts = (req, res, next) => {
   Product.find({userId: req.user._id})
@@ -36,7 +37,10 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
+  const page = req.query.page;
   Product.find()
+  .skip((page - 1) * ITEMS_PER_PAGES)
+  .limit(ITEMS_PER_PAGES)
     .then(products => {
       res.render('shop/index', {
         prods: products,

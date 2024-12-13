@@ -258,3 +258,43 @@ form {
     display: none;
   }
 }
+
+/* Pagination */
+
+#pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  padding: 10px;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#pagination a {
+  display: inline-block;
+  margin: 0 8px;
+  padding: 8px 16px;
+  text-decoration: none;
+  color: #007bff;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+#pagination a:hover {
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+}
+
+#pagination a.active {
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff;
+  pointer-events: none;
+}
