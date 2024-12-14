@@ -3,23 +3,39 @@ const path = require('path');
 const Product = require('../models/product');
 const Order = require('../models/order');
 const pdfkit = require('pdfkit'); // to generate dynamic pdf
-const ITEMS_PER_PAGES = 3;
+const ITEMS_PER_PAGES = 4;
 
 exports.getProducts = (req, res, next) => {
+  const page = +req.query.page || 1; // + convert the string to int
+  let totalItems;
+
   Product.find({userId: req.user._id})
-    .then(products => {
-      console.log(products);
-      res.render('shop/product-list', {
-        prods: products,
-        pageTitle: 'All Products',
-        path: '/products',
-        isAuthenticated: req.session.isLoggedIn,
-        csrfToken: req.csrfToken()
-      });
-    })
-    .catch(err => {
-      console.log(err);
+  .countDocuments()
+  .then(numProducts => {
+    totalItems = numProducts;
+    return Product.find()
+    .skip((page - 1) * ITEMS_PER_PAGES)
+    .limit(ITEMS_PER_PAGES);
+  })
+  .then(products => {
+    res.render('shop/product-list', {
+      prods: products,
+      pageTitle: 'All Products',
+      path: '/products',
+      isAuthenticated: req.session.isLoggedIn,
+      csrfToken: req.csrfToken(),
+      currentPage: page,
+      totalProducts: totalItems,
+      hasNextPage: ITEMS_PER_PAGES * page < totalItems,
+      hasPreviousPage: page > 1,
+      nextPage: page + 1,
+      previousPage: page - 1,
+      lastPage: Math.ceil(totalItems / ITEMS_PER_PAGES)
     });
+  })
+  .catch(err => {
+    console.log(err)
+  });
 };
 
 exports.getProduct = (req, res, next) => {
@@ -37,22 +53,36 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
-  const page = req.query.page;
+  const page = +req.query.page || 1; // + convert the string to int
+  let totalItems;
+
   Product.find()
-  .skip((page - 1) * ITEMS_PER_PAGES)
-  .limit(ITEMS_PER_PAGES)
-    .then(products => {
-      res.render('shop/index', {
-        prods: products,
-        pageTitle: 'Shop',
-        path: '/',
-        isAuthenticated: req.session.isLoggedIn,
-        csrfToken: req.csrfToken()
-      });
-    })
-    .catch(err => {
-      console.log(err);
+  .countDocuments()
+  .then(numProducts => {
+    totalItems = numProducts;
+    return Product.find()
+    .skip((page - 1) * ITEMS_PER_PAGES)
+    .limit(ITEMS_PER_PAGES);
+  })
+  .then(products => {
+    res.render('shop/index', {
+      prods: products,
+      pageTitle: 'Shop',
+      path: '/',
+      isAuthenticated: req.session.isLoggedIn,
+      csrfToken: req.csrfToken(),
+      currentPage: page,
+      totalProducts: totalItems,
+      hasNextPage: ITEMS_PER_PAGES * page < totalItems,
+      hasPreviousPage: page > 1,
+      nextPage: page + 1,
+      previousPage: page - 1,
+      lastPage: Math.ceil(totalItems / ITEMS_PER_PAGES)
     });
+  })
+  .catch(err => {
+    console.log(err)
+  });
 };
 
 exports.getCart = (req, res, next) => {
@@ -169,25 +199,5 @@ exports.getInvoice = (req, res, next) => {
         pdfDoc.text('-----------------------------');
         pdfDoc.fontSize(20).text('Total Price - '+ '$'+ totalPrice);
         pdfDoc.end();
-
-        /** This is file preloading & download code, it can be suitable for small file but for large file it is good to use 
-         * file striming using chunk for fast & efficient way */
-
-        // fs.readFile(invoicePath, (err, data) => {
-        //   if(err){
-        //       return next(err);
-        //   }
-        //   res.setHeader('Content-Type', 'application/pdf');
-        //   res.setHeader('Content-Disposition', `attachment; filename="${invoiceName}"`);
-        //   res.send(data);
-        // });
-
-        /** Code using File Streaming */
-        // const file = fs.createReadStream(invoicePath);
-        // res.setHeader('Content-Type', 'application/pdf');
-        // res.setHeader('Content-Disposition', `attachment; filename="${invoiceName}"`);
-        // file.pipe(res);
-
     }).catch(err => next(err));
-    
 }
