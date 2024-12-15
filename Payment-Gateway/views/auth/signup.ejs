@@ -1,0 +1,39 @@
+<%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/forms.css">
+    <link rel="stylesheet" href="/css/auth.css">
+</head>
+
+<body>
+   <%- include('../includes/navigation.ejs') %>
+
+    <main>
+        <form class="login-form" action="/signup" method="POST">
+
+            <!-- Display Validation Errors -->
+            <% if (errorMessage.length > 0) { %>
+                <div class="error-messages">
+                    <ul>
+                        <% errorMessage.forEach(error => { %>
+                            <li><%= error.msg %></li>
+                        <% }) %>
+                    </ul>
+                </div>
+            <% } %>
+
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <div class="form-control">
+                <label for="email">E-Mail</label>
+                <input class="<%= errorMessage.some(err => err.path === 'email') ? 'invalid' : '' %>" type="email" name="email" id="email" value="<%= (oldInput) ? (oldInput.email) : '' %>">
+            </div>
+            <div class="form-control">
+                <label for="password">Password</label>
+                <input type="password" class="<%= errorMessage.some(err => err.path === 'password') ? 'invalid' : '' %>" name="password" id="password" value="<%= (oldInput) ? (oldInput.password) : '' %>">
+            </div>
+            <div class="form-control">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" class="<%= errorMessage.some(err => err.path === 'confirmPassword') ? 'invalid' : '' %>" name="confirmPassword" id="confirmPassword" value="<%= (oldInput) ? (oldInput.confirmPassword) : '' %>">
+            </div>
+            <button class="btn" type="submit">Signup</button>
+        </form>
+    </main>
+<%- include('../includes/end.ejs') %>

@@ -1,0 +1,11 @@
+/* Add below package for password encryption */
+
+npm i --save bcryptjs
+
+/* Package to help for file-upload/downlaod */
+
+npm i --save multer
+
+/** To generate dynamic PDF */
+
+npm i --save pdfkit
