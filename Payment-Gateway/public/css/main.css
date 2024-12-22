@@ -298,3 +298,65 @@ form {
   border-color: #007bff;
   pointer-events: none;
 }
+
+/* Gateways */
+
+.payment-options h3 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #555;
+}
+
+.gateway-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.gateway-btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.gateway-btn:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 86, 179, 0.2);
+}
+
+.gateway-btn:active {
+  background-color: #004080;
+  transform: translateY(1px);
+}
+
+#paypal {
+  background-color: #ffc439;
+}
+
+#paypal:hover {
+  background-color: #e0a800;
+}
+
+#stripe {
+  background-color: #6772e5;
+}
+
+#stripe:hover {
+  background-color: #5469d4;
+}
+
+#razorpay {
+  background-color: #3395ff;
+}
+
+#razorpay:hover {
+  background-color: #0077cc;
+}

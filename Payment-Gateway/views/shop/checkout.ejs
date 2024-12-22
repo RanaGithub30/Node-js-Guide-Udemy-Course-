@@ -15,8 +15,21 @@
         </ul>
         <div class="centered">
             <h2>
-                Total: <%= totalSum %>
+                Total: $<%= totalSum %>
             </h2>
+            <div class="payment-options">
+                <h3>Pay With:</h3>
+                <div class="gateway-buttons">
+                  <button class="gateway-btn" id="paypal">PayPal</button>
+                  <form action="/api/payments/create-stripe-payment" method="post" target="_blank">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <input type="hidden" name="totalQuantity" value="<%= totalQuantity %>">
+                      <input type="hidden" name="totalPrice" value="<%= totalSum * 100 %>">
+                      <button class="gateway-btn" id="stripe-btn" type="submit">Stripe</button>
+                  </form>
+                  <button class="gateway-btn" id="razorpay">Razorpay</button>
+                </div>
+            </div>
         </div>
     </main>
 <%- include('../includes/end.ejs') %>

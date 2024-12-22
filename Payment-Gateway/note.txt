@@ -1,11 +1,4 @@
-/* Add below package for password encryption */
+/* Stripe Gateway */
 
-npm i --save bcryptjs
+npm install stripe
 
-/* Package to help for file-upload/downlaod */
-
-npm i --save multer
-
-/** To generate dynamic PDF */
-
-npm i --save pdfkit

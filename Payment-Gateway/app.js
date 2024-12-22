@@ -32,6 +32,12 @@ app.use(fileUploadMiddleware);
 app.use(csrfMiddleware);
 app.use(globalVarsMiddleware);
 
+
+// Route to provide the CSRF token
+app.get('/api/csrf-token', (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
+
 // Attach User to Request
 app.use((req, res, next) => {
   if (!req.session.user) {
@@ -54,10 +60,12 @@ app.use((req, res, next) => {
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
+const paymentRoutes = require('./routes/paymentRoutes');
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Error Handling Middleware
 app.use(error);

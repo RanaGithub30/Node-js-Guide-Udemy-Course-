@@ -211,7 +211,9 @@ exports.getCheckout = (req, res, next) => {
     .then(user => {
       const products = user.cart.items;
       let total = 0;
+      let totalQuantity = 0;
       products.forEach(p => {
+          totalQuantity += p.quantity;
           total += p.quantity * p.productId.price;
       });
 
@@ -219,7 +221,9 @@ exports.getCheckout = (req, res, next) => {
         path: '/checkout',
         pageTitle: 'Checkout',
         products: products,
-        totalSum: total
+        csrfToken: req.csrfToken(),
+        totalSum: total,
+        totalQuantity: totalQuantity
       });
     })
     .catch(err => console.log(err));
