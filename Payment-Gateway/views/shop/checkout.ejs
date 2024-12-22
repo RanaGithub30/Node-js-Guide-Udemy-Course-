@@ -13,6 +13,8 @@
                 </li>
             <% }) %>
         </ul>
+
+        <% if(totalSum != 0){ %>
         <div class="centered">
             <h2>
                 Total: $<%= totalSum %>
@@ -31,5 +33,11 @@
                 </div>
             </div>
         </div>
+        <% }else{ %>
+            <div class="centered">
+                <h3>No Order Found</h3>
+            </div>
+        <% } %>
+
     </main>
 <%- include('../includes/end.ejs') %>
