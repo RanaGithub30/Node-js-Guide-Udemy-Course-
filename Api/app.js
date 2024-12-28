@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const flash = require('connect-flash');
 const bodyParser = require('body-parser');
+const headerMiddlewares = require('./middlewares/headers');
 require('dotenv').config();
 
 const app = express();
@@ -13,6 +14,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Flash Messages Middleware
 app.use(flash());
+
+// for CROS Issue Solve
+app.use(headerMiddlewares);
+
+const feedRoute = require('./routes/feed');
+app.use('/api/v1/', feedRoute);
 
 const PORT = process.env.PORT || 3000;
 
