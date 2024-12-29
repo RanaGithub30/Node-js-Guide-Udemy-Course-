@@ -8,9 +8,13 @@ require('dotenv').config();
 
 const app = express();
 
+// Parse application/json
+app.use(express.json());
+
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+
 
 // Flash Messages Middleware
 app.use(flash());
@@ -19,7 +23,7 @@ app.use(flash());
 app.use(headerMiddlewares);
 
 const feedRoute = require('./routes/feed');
-app.use('/api/v1/', feedRoute);
+app.use('/api/v1/feed/', feedRoute);
 
 const PORT = process.env.PORT || 3000;
 
