@@ -4,12 +4,24 @@ const Feed = require('../models/feed');
 const { validationResult } = require('express-validator');
 
 exports.getPost = (req, res, next) => {
+    const currentPage = req.query.page || 1;
+    const pagePage = 3;
+    let totalItemms;
+
     Feed.find()
-    .select(['-__v', '-creator']) // select all except __v & creator
+    .select(['-__v', '-creator'])
+    .countDocuments()
+    .then(count => {
+        totalItemms = count;
+        return Feed.find()
+        .skip((currentPage - 1) * pagePage)
+        .limit(pagePage);
+    })
     .then(feeds => {
         res.status(200).json({
             'msg': 'success',
-            'data': feeds
+            'data': feeds,
+            'totalItems': totalItemms
         });
     })
     .catch(err => {
@@ -18,6 +30,8 @@ exports.getPost = (req, res, next) => {
             'errors': err
         });
     });
+
+    
 }
 
 exports.createPost = (req, res, next) => {
