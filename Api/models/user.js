@@ -19,10 +19,10 @@ const userSchema = new Schema(
           type: String,
           required: true
         },
-        posts: [
+        feeds: [
             {
                 type: Schema.Types.ObjectId,
-                ref: 'Post'
+                ref: 'Feed'
             }
         ]
     },

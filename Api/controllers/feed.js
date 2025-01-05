@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const Feed = require('../models/feed');
+const User = require('../models/user');
 const { validationResult } = require('express-validator');
 
 exports.getPost = (req, res, next) => {
@@ -37,7 +38,8 @@ exports.getPost = (req, res, next) => {
 exports.createPost = (req, res, next) => {
     const title = req.body.title;
     const content = req.body.content;
-    const creator = req.body.creator;
+    const creator = req.userId;
+    let creatorDetails;
     const errors = validationResult(req);
     let image = "";
 
@@ -60,10 +62,19 @@ exports.createPost = (req, res, next) => {
     });
     feed
     .save()
-    .then(feed => {
+    .then(result => {
+        return User.findById(creator);
+    })
+    .then(user => {
+        creatorDetails = user;
+        user.feeds.push(feed);
+        return user.save();
+    })
+    .then(feedDetails => {
         res.status(201).json({
             'msg': 'Success',
-            'data': feed
+            'feeds': feed,
+            'ctreator': creatorDetails
         });
     })
     .catch(err => {
@@ -75,6 +86,7 @@ exports.createPost = (req, res, next) => {
 
 exports.postDetails = (req, res, next) => {
     const postId = req.params.postId;
+    let feedDetails;
 
     Feed.findById(postId)
     .then(feed => {
@@ -85,9 +97,14 @@ exports.postDetails = (req, res, next) => {
             });    
         }
 
+        feedDetails = feed;
+        return User.findById(feedDetails.creator);
+    })
+    .then(user => {
         res.status(200).json({
             'msg': 'success',
-            'data': feed
+            'feed': feedDetails,
+            'creator': user
         });
     })
     .catch(err => {
@@ -101,7 +118,7 @@ exports.postDetails = (req, res, next) => {
 exports.postUpdate = (req, res, next) => {
     const title = req.body.title;
     const content = req.body.content;
-    const creator = req.body.creator;
+    const creator = req.userId;
     const postId = req.params.postId;
 
     Feed.findById(postId)
