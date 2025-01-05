@@ -96,3 +96,21 @@ exports.signin = (req, res, next) => {
         });
     })
 }
+
+exports.profile = (req, res, next) => {
+    const userId = req.userId;
+    User.findOne({_id: userId})
+    .select(['-__v', '-password'])
+    .then(user => {
+        return res.status(500).json({
+            'msg': 'User Profile',
+            'data': user
+        });
+    })
+    .catch(err => {
+        return res.status(500).json({
+            'msg': 'Error',
+            'errors': err
+        });
+    })
+}

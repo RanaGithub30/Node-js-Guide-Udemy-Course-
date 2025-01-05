@@ -1,5 +1,6 @@
 const express = require('express');
 const authController = require('../controllers/auth');
+const isAuth = require('../middlewares/isAuth');
 const {body} = require('express-validator');
 const User = require('../models/user');
 const router = express.Router();
@@ -25,5 +26,7 @@ router.post('/signin',
         body('password', 'Password must be Minimum 5 charecter Long').trim().isLength({min: 5}),
     ],
     authController.signin);
+
+router.get('/profile', isAuth, authController.profile);
 
 module.exports = router;
