@@ -39,7 +39,9 @@ app.use(fileUploadMiddleware);
 
 // Routes
 const feedRoute = require("./routes/feed");
+const authRoute = require("./routes/auth");
 app.use("/api/v1/feed", feedRoute);
+app.use("/api/v1/auth", authRoute);
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {
