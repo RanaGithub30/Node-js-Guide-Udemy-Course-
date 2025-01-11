@@ -8,13 +8,14 @@ exports.getPost = (req, res, next) => {
     const currentPage = req.query.page || 1;
     const pagePage = 3;
     let totalItemms;
+    let userId = req.userId;
 
-    Feed.find()
+    Feed.find({ creator: userId })
     .select(['-__v', '-creator'])
     .countDocuments()
     .then(count => {
         totalItemms = count;
-        return Feed.find()
+        return Feed.find({ creator: userId })
         .skip((currentPage - 1) * pagePage)
         .limit(pagePage);
     })
@@ -22,6 +23,8 @@ exports.getPost = (req, res, next) => {
         res.status(200).json({
             'msg': 'success',
             'data': feeds,
+            currentPage,
+            pagePage,
             'totalItems': totalItemms
         });
     })
@@ -31,8 +34,6 @@ exports.getPost = (req, res, next) => {
             'errors': err
         });
     });
-
-    
 }
 
 exports.createPost = (req, res, next) => {
@@ -87,28 +88,36 @@ exports.createPost = (req, res, next) => {
 exports.postDetails = (req, res, next) => {
     const postId = req.params.postId;
     let feedDetails;
+    let userId = req.userId;
 
     Feed.findById(postId)
     .then(feed => {
         if(!feed){
-            res.status(404).json({
+            return res.status(404).json({
                 'msg': 'Can Not Find Any Feeds',
                 'data': []
             });    
+        }
+
+        if(feed.creator != userId){
+            return res.status(403).json({
+                'msg': 'Unauthorized',
+                'data': []
+            });   
         }
 
         feedDetails = feed;
         return User.findById(feedDetails.creator);
     })
     .then(user => {
-        res.status(200).json({
+        return res.status(200).json({
             'msg': 'success',
             'feed': feedDetails,
             'creator': user
         });
     })
     .catch(err => {
-        res.status(500).json({
+        return res.status(500).json({
             'msg': 'Error',
             'errors': err
         });
