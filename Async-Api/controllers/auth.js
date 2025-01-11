@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 
-exports.signup = (req, res, next) => {
+exports.signup = async (req, res, next) => {
     const name = req.body.name;
     const email = req.body.email;
     const password = req.body.password;
@@ -17,32 +17,31 @@ exports.signup = (req, res, next) => {
         });
     }
 
-    bcrypt.hash(password, 12)
-    .then(hashedPassword => {
-        const user = new User({
+    try{
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const user = new User({
             email: email,
             name: name,
             password: hashedPassword,
             status: status
         });
 
-        return user.save();
-    })
-    .then(result => {
-        res.status(201).json({
-            'msg': 'User Signup Done Successfully',
-            'data': result,
-        });
-    })
-    .catch(err => {
+    const result = user.save();
+    
+    res.status(201).json({
+        'msg': 'User Signup Done Successfully',
+        'data': result,
+    });
+    }catch (err) {
         res.status(500).json({
             'msg': 'Error',
-            'errors': err
+            'errors': err.message || err
         });
-    });
+    };
 }
 
-exports.signin = (req, res, next) => {
+exports.signin = async (req, res, next) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()){
         return res.status(422).json({
@@ -55,9 +54,9 @@ exports.signin = (req, res, next) => {
     const password = req.body.password;
     let loadedUser;
 
-    User.findOne({email:email})
-    .select(['-__v'])
-    .then(user => {
+    try{
+        const user = await User.findOne({email:email}).select(['-__v']);
+        
         if(!user){
             res.status(404).json({
                 'msg': 'Error',
@@ -66,9 +65,8 @@ exports.signin = (req, res, next) => {
         }
 
         loadedUser = user;
-        return bcrypt.compare(password, user.password);
-    })
-    .then(isEqual => {
+        const isEqual = await bcrypt.compare(password, user.password);
+
         if(!isEqual){
             res.status(404).json({
                 'msg': 'Error',
@@ -88,29 +86,30 @@ exports.signin = (req, res, next) => {
             'data': loadedUser,
             'token': token
         });
-    })
-    .catch(err => {
+    }
+    catch(err){
         return res.status(500).json({
             'msg': 'Error',
             'errors': err
         });
-    })
+    }
 }
 
-exports.profile = (req, res, next) => {
+exports.profile = async (req, res, next) => {
     const userId = req.userId;
-    User.findOne({_id: userId})
-    .select(['-__v', '-password'])
-    .then(user => {
-        return res.status(500).json({
+
+    try{    
+        const user = await User.findOne({_id: userId}).select(['-__v', '-password']);
+
+        return res.status(200).json({
             'msg': 'User Profile',
             'data': user
         });
-    })
-    .catch(err => {
+    }
+    catch(err){
         return res.status(500).json({
             'msg': 'Error',
             'errors': err
         });
-    })
+    }
 }

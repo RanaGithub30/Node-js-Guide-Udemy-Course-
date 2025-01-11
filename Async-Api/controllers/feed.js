@@ -4,22 +4,17 @@ const Feed = require('../models/feed');
 const User = require('../models/user');
 const { validationResult } = require('express-validator');
 
-exports.getPost = (req, res, next) => {
+exports.getPost = async (req, res, next) => {
     const currentPage = req.query.page || 1;
     const pagePage = 3;
     let totalItemms;
     let userId = req.userId;
 
-    Feed.find({ creator: userId })
-    .select(['-__v', '-creator'])
-    .countDocuments()
-    .then(count => {
+    try{
+        const count = await Feed.find({ creator: userId }).select(['-__v', '-creator']).countDocuments();
+        const feeds = await Feed.find({ creator: userId }).skip((currentPage - 1) * pagePage).limit(pagePage);
         totalItemms = count;
-        return Feed.find({ creator: userId })
-        .skip((currentPage - 1) * pagePage)
-        .limit(pagePage);
-    })
-    .then(feeds => {
+
         res.status(200).json({
             'msg': 'success',
             'data': feeds,
@@ -27,16 +22,16 @@ exports.getPost = (req, res, next) => {
             pagePage,
             'totalItems': totalItemms
         });
-    })
-    .catch(err => {
+    }
+    catch(err){
         res.status(500).json({
             'msg': 'Error',
             'errors': err
         });
-    });
+    };
 }
 
-exports.createPost = (req, res, next) => {
+exports.createPost = async (req, res, next) => {
     const title = req.body.title;
     const content = req.body.content;
     const creator = req.userId;
@@ -55,43 +50,42 @@ exports.createPost = (req, res, next) => {
         image = req.file.path;
     }
 
-    const feed = new Feed({
-        title: title,
-        content: content,
-        creator: creator,
-        imageUrl: image
-    });
-    feed
-    .save()
-    .then(result => {
-        return User.findById(creator);
-    })
-    .then(user => {
+    try{
+        const feed = new Feed({
+            title: title,
+            content: content,
+            creator: creator,
+            imageUrl: image
+        });
+
+        const result = await feed.save();
+        const user = await User.findById(creator);
         creatorDetails = user;
+        
         user.feeds.push(feed);
-        return user.save();
-    })
-    .then(feedDetails => {
+        const feedDetails = await user.save();
+        
         res.status(201).json({
             'msg': 'Success',
             'feeds': feed,
             'ctreator': creatorDetails
         });
-    })
-    .catch(err => {
+    }
+    catch(err){
         res.status(500).json({
             'msg': err
         });
-    });
+    };
 }
 
-exports.postDetails = (req, res, next) => {
+exports.postDetails = async (req, res, next) => {
     const postId = req.params.postId;
     let feedDetails;
     let userId = req.userId;
 
-    Feed.findById(postId)
-    .then(feed => {
+    try{
+        const feed = await Feed.findById(postId);
+        
         if(!feed){
             return res.status(404).json({
                 'msg': 'Can Not Find Any Feeds',
@@ -107,31 +101,31 @@ exports.postDetails = (req, res, next) => {
         }
 
         feedDetails = feed;
-        return User.findById(feedDetails.creator);
-    })
-    .then(user => {
+        const user = await User.findById(feedDetails.creator);
+        
         return res.status(200).json({
             'msg': 'success',
             'feed': feedDetails,
             'creator': user
         });
-    })
-    .catch(err => {
+    }
+    catch(err) {
         return res.status(500).json({
             'msg': 'Error',
             'errors': err
         });
-    });
+    };
 }
 
-exports.postUpdate = (req, res, next) => {
+exports.postUpdate = async (req, res, next) => {
     const title = req.body.title;
     const content = req.body.content;
     const creator = req.userId;
     const postId = req.params.postId;
 
-    Feed.findById(postId)
-    .then(feed => {
+    try{
+        const feed = await Feed.findById(postId);
+
         if(!feed){
             return res.status(404).json({
                 'msg': 'Can Not Find Any Feeds',
@@ -147,9 +141,8 @@ exports.postUpdate = (req, res, next) => {
         feed.content = content;
         feed.creator = creator;
         feed.imageUrl = (req.file) ? (req.file.path) : feed.imageUrl;
-        return feed.save();
-    })
-    .then(result => {
+        const result = await feed.save();
+    
         let fullIMagePath = fullImagePath(req, result.imageUrl);
         result.imageUrl = fullIMagePath;
 
@@ -157,13 +150,13 @@ exports.postUpdate = (req, res, next) => {
             'msg': 'Feed Updated Successfully',
             'data': result
         });
-    })
-    .catch(err => {
+    }
+    catch(err){
         return res.status(500).json({
             'msg': 'Error',
             'errors': err
         });
-    });
+    };
 }
 
 const fullImagePath = (req, filePath) => {
@@ -186,11 +179,12 @@ const clearImage = (filePath) => {
 };
 
 
-exports.postDelete = (req, res, next) => {
+exports.postDelete = async (req, res, next) => {
     const postId = req.params.postId;
 
-    Feed.findById(postId)
-        .then(feed => {
+    try{
+            const feed = await Feed.findById(postId);
+
             if (!feed) {
                 return res.status(404).json({
                     msg: 'Feed not found',
@@ -204,9 +198,8 @@ exports.postDelete = (req, res, next) => {
             }
 
             // Delete the feed
-            return Feed.deleteOne({ _id: postId });
-        })
-        .then(result => {
+            const result =  await Feed.deleteOne({ _id: postId });
+            
             if (result.deletedCount === 0) {
                 return res.status(404).json({
                     msg: 'Feed not found or already deleted',
@@ -218,12 +211,12 @@ exports.postDelete = (req, res, next) => {
                 msg: 'Feed deleted successfully',
                 data: []
             });
-        })
-        .catch(err => {
+        }
+        catch(err) {
             console.error(err);
             res.status(500).json({
                 msg: 'Error',
                 errors: err
             });
-        });
+        };
 };
