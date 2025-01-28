@@ -1,0 +1,7 @@
+/* Install Websocket using below command */
+
+npm i --save socket.io
+
+// socket.io documentation
+
+https://socket.io/docs/v3/

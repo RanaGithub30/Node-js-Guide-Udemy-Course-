@@ -58,8 +58,10 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => {
-    app.listen(PORT, () =>
-      console.log(`Server running on port ${PORT} and connected to MongoDB`)
-    );
+    const server = app.listen(PORT);
+    const io = require('socket.io')(server);
+    io.on('connection', socket => {
+      console.log("connected");
+    });
   })
   .catch((err) => console.error("Database connection error:", err));
