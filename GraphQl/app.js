@@ -6,6 +6,10 @@ const session = require("express-session");
 const flash = require("connect-flash");
 const headerMiddlewares = require("./middlewares/headers");
 const fileUploadMiddleware = require("./middlewares/fileUpload");
+const { graphqlHTTP } = require('express-graphql'); // Correct import
+const graphqlSchema = require('./graphql/schema');
+const graphqlResolver = require('./graphql/resolvers');
+
 require("dotenv").config();
 
 const app = express();
@@ -13,6 +17,12 @@ const app = express();
 // MongoDB Connection URI and Port
 const MONGO_URI = process.env.MONGO_URI || "your-default-mongodb-uri";
 const PORT = process.env.PORT || 3000;
+
+app.use('/graphql', graphqlHTTP({
+  schema: graphqlSchema,
+  rootValue: graphqlResolver,
+  graphiql: true
+}));
 
 // Session Configuration
 app.use(
@@ -36,12 +46,6 @@ app.use('/images', express.static(path.join(__dirname, "images")));
 // Custom Middleware
 app.use(headerMiddlewares);
 app.use(fileUploadMiddleware);
-
-// Routes
-const feedRoute = require("./routes/feed");
-const authRoute = require("./routes/auth");
-app.use("/api/v1/feed", feedRoute);
-app.use("/api/v1/auth", authRoute);
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {
