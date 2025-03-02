@@ -12,3 +12,15 @@ What is a Mutation in GraphQL?
 
 A mutation in GraphQL is used to modify data on the server (e.g., create, update, or delete records). 
 Unlike queries (which only fetch data), mutations change data and usually return the modified object.
+
+/* Install Validator package for validation */
+
+npm i --save validator
+
+or 
+
+npm install --save validator --legacy-peer-deps
+
+or 
+
+npm install --save validator --force
