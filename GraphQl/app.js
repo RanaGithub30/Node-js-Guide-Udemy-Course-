@@ -6,6 +6,7 @@ const session = require("express-session");
 const flash = require("connect-flash");
 const headerMiddlewares = require("./middlewares/headers");
 const fileUploadMiddleware = require("./middlewares/fileUpload");
+const authMiddleware = require('./middlewares/isAuth');
 const { graphqlHTTP } = require('express-graphql'); // Correct import
 const graphqlSchema = require('./graphql/schema');
 const graphqlResolver = require('./graphql/resolvers');
@@ -17,24 +18,6 @@ const app = express();
 // MongoDB Connection URI and Port
 const MONGO_URI = process.env.MONGO_URI || "your-default-mongodb-uri";
 const PORT = process.env.PORT || 3000;
-
-app.use('/graphql', graphqlHTTP({
-  schema: graphqlSchema,
-  rootValue: graphqlResolver,
-  graphiql: true,
-  formatError(err){
-    if(!err.originalError){
-      return err;
-    }
-
-    else{
-      const data = err.originalError.data;
-      const message = err.message || "An Error is Occured";
-      const code = err.originalError.code || 500;
-      return {message: message, status: code, data: data};
-    }
-  }
-}));
 
 // Session Configuration
 app.use(
@@ -58,6 +41,26 @@ app.use('/images', express.static(path.join(__dirname, "images")));
 // Custom Middleware
 app.use(headerMiddlewares);
 app.use(fileUploadMiddleware);
+
+app.use(authMiddleware);
+
+app.use('/graphql', graphqlHTTP({
+  schema: graphqlSchema,
+  rootValue: graphqlResolver,
+  graphiql: true,
+  formatError(err){
+    if(!err.originalError){
+      return err;
+    }
+
+    else{
+      const data = err.originalError.data;
+      const message = err.message || "An Error is Occured";
+      const code = err.originalError.code || 500;
+      return {message: message, status: code, data: data};
+    }
+  }
+}));
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {

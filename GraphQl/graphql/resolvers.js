@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const Post = require('../models/feed');
 const bcrypt = require('bcryptjs');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
@@ -64,5 +65,38 @@ module.exports = {
             }, 'supersecretkey', {  expiresIn: "1h" });
 
             return {token: token, userId: user._id.toString() };
+    },
+
+    createPost: async function({postInput}, req){
+        const errors = [];
+
+        if(!req.isAuth){
+            const error = new Error('Not Authenticated');
+            error.code = 401;
+            throw error;
+        }
+
+        if(validator.isEmpty(postInput.title) || validator.isLength(postInput.title, {min: 3})){
+                errors.push({message: "Title is Invalid"});
+        }
+        if(validator.isEmpty(postInput.content) || validator.isLength(postInput.content, {min: 3})){
+                errors.push({message: "Content is Invalid"});
+        }
+
+        const user = User.findOne({_id: req.userId});
+        if(!user){
+            errors.push({message: "Invalid User", "code": 401});
+        }
+
+        const newPost = new Post({
+            title: postInput.title,
+            content: postInput.content,
+            imageUrl: postInput.imageUrl,
+            creator: req.userId
+        });
+
+        const createdPost = await newPost.save();
+        
+        return {...createdPost._doc, _id: newPost._id.toString()};
     }
 }
