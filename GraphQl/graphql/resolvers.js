@@ -100,23 +100,47 @@ module.exports = {
         return {...createdPost._doc, _id: newPost._id.toString()};
     },
 
-    allPosts: async function(args, req){
+    allPosts: async function({page}, req){
         if(!req.isAuth){
             const error = new Error('Not Authenticated');
             error.code = 401;
             throw error;
         }
 
+        if(!page){
+            page = 1;
+        }
+
+        const perPage = 1;
+
         const totalPost = await Post.find({creator: req.userId}).countDocuments();
-        const postsDetails = await Post.find({creator: req.userId}).sort({ createdAt: - 1 }).populate('creator');
+        const postsDetails = await Post.find({creator: req.userId})
+        .skip((page - 1) * perPage)
+        .limit(perPage)
+        .sort({ createdAt: - 1 })
+        .populate('creator');
+
+        const totalPages = Math.ceil(totalPost / perPage);
+
+        // Base URL (change as per your API domain)
+        const baseUrl = `${req.protocol}://${req.get("host")}/graphql`;
+
+        // Construct next and previous page links
+        const nextPageUrl = page < totalPages ? `${baseUrl}?query={allPosts(page:${page + 1})}` : null;
+        const prevPageUrl = page > 1 ? `${baseUrl}?query={allPosts(page:${page - 1})}` : null;
+
         return {
-            posts: postsDetails.map(p => {
-                return {
-                    ...p._doc,
-                    _id: p._id.toString(),
-                };
-            }),
-            totalPosts: totalPost
+            posts: postsDetails.map(p => ({
+                ...p._doc,
+                _id: p._id.toString(),
+            })),
+            totalPosts: totalPost,
+            currentPage: page,
+            totalPages: totalPages,
+            nextPage: page < totalPages ? page + 1 : null,
+            prevPage: page > 1 ? page - 1 : null,
+            nextPageUrl: nextPageUrl,
+            prevPageUrl: prevPageUrl
         };
     }
 }
