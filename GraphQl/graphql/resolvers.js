@@ -98,5 +98,25 @@ module.exports = {
         const createdPost = await newPost.save();
         
         return {...createdPost._doc, _id: newPost._id.toString()};
+    },
+
+    allPosts: async function(args, req){
+        if(!req.isAuth){
+            const error = new Error('Not Authenticated');
+            error.code = 401;
+            throw error;
+        }
+
+        const totalPost = await Post.find({creator: req.userId}).countDocuments();
+        const postsDetails = await Post.find({creator: req.userId}).sort({ createdAt: - 1 }).populate('creator');
+        return {
+            posts: postsDetails.map(p => {
+                return {
+                    ...p._doc,
+                    _id: p._id.toString(),
+                };
+            }),
+            totalPosts: totalPost
+        };
     }
 }
