@@ -142,5 +142,116 @@ module.exports = {
             nextPageUrl: nextPageUrl,
             prevPageUrl: prevPageUrl
         };
-    }
+    },
+
+    singlePost: async function ({postId}, req){
+        if(!req.isAuth){
+            const error = new Error('Not Authenticated');
+            error.code = 401;
+            throw error;
+        }
+
+        const post = await Post.findById(postId).populate('creator');
+        
+        if (!post) {
+            const error = new Error("Post not found");
+            error.code = 404;
+            throw error;
+        }
+    
+        return {
+            ...post._doc,
+            _id: post._id,
+            createdAt: post.createdAt.toISOString(),
+            updatedAt: post.updatedAt.toISOString(),
+            creator: {
+                _id: post.creator._id.toString(),
+                name: post.creator.name,
+                email: post.creator.email,
+                status: post.creator.status
+            }
+        };
+    },
+
+    updatePost: async function ({ postId, postInput }, req) {
+        if (!req.isAuth) {
+            const error = new Error("Not Authenticated");
+            error.code = 401;
+            throw error;
+        }
+    
+        const post = await Post.findById(postId).populate("creator");
+        if (!post) {
+            const error = new Error("Post not found");
+            error.code = 404;
+            throw error;
+        }
+    
+        // Check if the logged-in user is the owner of the post
+        if (post.creator._id.toString() !== req.userId.toString()) {
+            const error = new Error("Not authorized to edit this post");
+            error.code = 403;
+            throw error;
+        }
+    
+        // Validate inputs
+        const errors = [];
+        if (validator.isEmpty(postInput.title) || !validator.isLength(postInput.title, { min: 3 })) {
+            errors.push({ message: "Title is Invalid" });
+        }
+        if (validator.isEmpty(postInput.content) || !validator.isLength(postInput.content, { min: 3 })) {
+            errors.push({ message: "Content is Invalid" });
+        }
+        if (errors.length > 0) {
+            const error = new Error("Invalid Input");
+            error.data = errors;
+            error.code = 422;
+            throw error;
+        }
+    
+        // Update post data
+        post.title = postInput.title;
+        post.content = postInput.content;
+        post.imageUrl = postInput.imageUrl;
+    
+        const updatedPost = await post.save();
+    
+        return {
+            ...updatedPost._doc,
+            _id: updatedPost._id.toString(),
+            createdAt: updatedPost.createdAt.toISOString(),
+            updatedAt: updatedPost.updatedAt.toISOString(),
+            creator: {
+                _id: post.creator._id.toString(),
+                name: post.creator.name,
+                email: post.creator.email,
+                status: post.creator.status
+            }
+        };
+    },
+    deletePost: async function ({ postId }, req) {
+        if (!req.isAuth) {
+            const error = new Error("Not Authenticated");
+            error.code = 401;
+            throw error;
+        }
+    
+        const post = await Post.findById(postId).populate("creator");
+        if (!post) {
+            const error = new Error("Post not found");
+            error.code = 404;
+            throw error;
+        }
+    
+        // Ensure the logged-in user is the owner of the post
+        if (post.creator._id.toString() !== req.userId.toString()) {
+            const error = new Error("Not authorized to delete this post");
+            error.code = 403;
+            throw error;
+        }
+    
+        await Post.findByIdAndDelete(postId);
+    
+        return true; // Return true for successful deletion
+    }        
 }
