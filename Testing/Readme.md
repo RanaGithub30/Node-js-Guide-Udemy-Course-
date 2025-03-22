@@ -23,4 +23,4 @@ It provides: ✅ Expect style (expect(value).to.equal(expected))
 Install Mocha & Chai in Node
 --------------------------------------
 
-npm i --save mocha chai
+npm i --save mocha chai@4.3.6
