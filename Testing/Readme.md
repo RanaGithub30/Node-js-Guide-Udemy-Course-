@@ -24,3 +24,4 @@ Install Mocha & Chai in Node
 --------------------------------------
 
 npm i --save mocha chai@4.3.6
+npm install chai-as-promised

@@ -12,7 +12,9 @@
   "description": "",
   "dependencies": {
     "chai": "^4.3.6",
+    "chai-as-promised": "^8.0.1",
     "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
     "mocha": "^11.1.0",
     "nodemon": "^3.1.9"
   }
