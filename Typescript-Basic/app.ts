@@ -15,7 +15,6 @@
       const result = add(value1, value2);
   
       if (res) {
-        console.log(result);
         res.innerHTML = result.toString();
       }
     });
