@@ -9,6 +9,8 @@
   "author": "Rana Saha",
   "license": "ISC",
   "dependencies": {
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.15.3",
     "body-parser": "^2.2.0",
     "express": "^5.1.0",
     "nodemon": "^3.1.9"
