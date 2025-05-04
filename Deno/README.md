@@ -6,21 +6,21 @@
 
 ----
 
-## 🔍 Feature Comparison (Node vs Deno)
+## 🔍 Feature Comparison
 
-| Feature               | **Node.js**                                     | **Deno**                                                   |
-|-----------------------|------------------------------------------------------------------------------|--------------------------------------------------------------------------|
+| Feature              | Node.js                                                                 | Deno                                                                 |
+|----------------------|-------------------------------------------------------------------------|----------------------------------------------------------------------|
+| **Language Support** | JavaScript (JS) & optional TypeScript via tools like `ts-node`          | Native support for TypeScript & JavaScript                          |
+| **Security**         | No default security (full access to FS, network, env)                   | Secure by default (must allow access explicitly with flags)         |
+| **Package Manager**  | Uses `npm` and `package.json`                                           | No package manager; uses URL-based imports                          |
+| **Module System**    | CommonJS (`require`) and ES Modules (`import`)                          | Only ES Modules (`import/export`)                                   |
+| **Standard Library** | Minimal; relies heavily on third-party modules                          | Comes with a comprehensive standard library                         |
+| **Installation**     | Requires `npm`, `nvm`, `npx`, etc.                                      | Single binary installation                                          |
+| **Bundling & Tools** | Needs external tools for bundling, linting, formatting                  | Built-in bundler, linter, formatter, test runner                    |
+| **Created By**       | Ryan Dahl (2009)                                                        | Ryan Dahl (2018)                                                    |
+| **Runtime Engine**   | V8 (Google) + C++                                                       | V8 + Rust                                                           |
+| **File Extensions**  | Extension optional for JS/TS                                            | Enforces use of `.js`, `.ts`, `.json`, etc.                         |
 
-| **Language Support**  | JavaScript (JS) & optional TypeScript via tools like `ts-node`              | Native support for TypeScript & JavaScript                               |
-| **Security**          | No default security (full access to FS, network, env)                       | Secure by default (must allow access explicitly with flags)              |
-| **Package Manager**   | Uses `npm` and `package.json`                                               | No package manager; uses URL-based imports                              |
-| **Module System**     | CommonJS (`require`) and ES Modules (`import`)                              | Only ES Modules (`import/export`)                                        |
-| **Standard Library**  | Minimal; relies heavily on third-party modules                              | Comes with a comprehensive standard library                              |
-| **Installation**      | Requires `npm`, `nvm`, `npx`, etc.                                          | Single binary installation                                               |
-| **Bundling & Tools**  | Needs external tools for bundling, linting, formatting                      | Built-in bundler, linter, formatter, test runner                         |
-| **Created By**        | Ryan Dahl (2009)                                                            | Ryan Dahl (2018)                                                         |
-| **Runtime Engine**    | V8 (Google) + C++                                                           | V8 + Rust                                                                |
-| **File Extensions**   | Extension optional for JS/TS  
 
 ---
 
