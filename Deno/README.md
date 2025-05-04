@@ -6,6 +6,24 @@
 
 ----
 
+## 🔍 Feature Comparison (Node vs Deno)
+
+| Feature               | **Node.js**                                     | **Deno**                                                   |
+|-----------------------|------------------------------------------------------------------------------|--------------------------------------------------------------------------|
+
+| **Language Support**  | JavaScript (JS) & optional TypeScript via tools like `ts-node`              | Native support for TypeScript & JavaScript                               |
+| **Security**          | No default security (full access to FS, network, env)                       | Secure by default (must allow access explicitly with flags)              |
+| **Package Manager**   | Uses `npm` and `package.json`                                               | No package manager; uses URL-based imports                              |
+| **Module System**     | CommonJS (`require`) and ES Modules (`import`)                              | Only ES Modules (`import/export`)                                        |
+| **Standard Library**  | Minimal; relies heavily on third-party modules                              | Comes with a comprehensive standard library                              |
+| **Installation**      | Requires `npm`, `nvm`, `npx`, etc.                                          | Single binary installation                                               |
+| **Bundling & Tools**  | Needs external tools for bundling, linting, formatting                      | Built-in bundler, linter, formatter, test runner                         |
+| **Created By**        | Ryan Dahl (2009)                                                            | Ryan Dahl (2018)                                                         |
+| **Runtime Engine**    | V8 (Google) + C++                                                           | V8 + Rust                                                                |
+| **File Extensions**   | Extension optional for JS/TS  
+
+---
+
 ## Install Deno
 
  - For Windows: 
@@ -64,3 +82,21 @@
 
         - For main .js file
             - deno main.js
+
+## Check Deno Docs & Examples From Here
+
+    - Docs - https://docs.deno.com/runtime/
+    - Examples - https://docs.deno.com/examples/
+
+## When To Use (Node & Deno)
+
+    ## ✅ Use Deno If You Want:
+        - Built-in TypeScript support without extra config
+        - Better security by default
+        - Simpler module system (ES modules)
+        - Tools like formatter, linter, and bundler included
+
+    ## 🧰 Use Node.js If You Want:
+        - Large ecosystem (npm)
+        - Mature and widely supported runtime
+        - Legacy project support and broader community tools
