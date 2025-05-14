@@ -1,0 +1,18 @@
+Oak is a middleware framework for Deno used to build web applications and APIs — similar to Express.js in Node.js.
+
+....................................
+What is Oak?
+...................................
+
+Oak is:
+
+1. A middleware-based web framework for Deno.
+2. Built on top of Deno's native HTTP server.
+3. Inspired by Koa (Node.js).
+4. Designed to be modular, modern, and async/await-friendly.
+
+..............................................................................
+Oak is imported directly from a URL (Deno uses ES modules, not npm):
+..............................................................................
+
+import { Application } from "https://deno.land/x/oak@v12.6.1/mod.ts";
